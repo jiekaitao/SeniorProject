@@ -1,0 +1,31 @@
+# Ablation: Decay Sensitivity Template
+# Full CGAR but with variable decay value
+# 0.7 will be replaced by script
+name: recursive_reasoning.trm_cgar@TinyRecursiveReasoningModel_ACTV1_CGAR
+loss:
+  name: losses_cgar@ACTLossHead_CGAR
+  loss_type: stablemax_cross_entropy
+  supervision_decay: 0.7  # Will be replaced: 0.5, 0.6, 0.7, 0.8, 0.9
+
+halt_exploration_prob: 0.1
+halt_max_steps: 16
+
+H_cycles: 3
+L_cycles: 6
+
+H_layers: 0
+L_layers: 2
+
+hidden_size: 512
+num_heads: 8
+expansion: 4
+
+puzzle_emb_ndim: ${.hidden_size}
+
+pos_encodings: none
+forward_dtype: bfloat16
+
+mlp_t: True
+puzzle_emb_len: 16
+no_ACT_continue: True
+

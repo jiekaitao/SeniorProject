@@ -1,0 +1,237 @@
+# CGAR - Git Ignore File
+# Prevents large files, logs, and internal docs from being pushed to GitHub
+
+# ============================================================================
+# LARGE FILES - Model Checkpoints & Data (CRITICAL - DO NOT PUSH)
+# ============================================================================
+
+# Model checkpoints (288MB - host on HuggingFace instead)
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.bin
+
+# Training data (1.3GB - too large for GitHub)
+data/
+data
+dataset/
+dataset
+*.pkl
+*.pickle
+
+# ============================================================================
+# Training Logs & Outputs (853MB wandb + logs)
+# ============================================================================
+
+# Wandb logs (853MB)
+wandb/
+
+# Experiment outputs (192MB)
+experiments/
+
+# Log files
+logs/
+logs_archive/
+*.log
+
+# Output directories
+outputs/
+runs/
+
+# ============================================================================
+# Internal Documentation (DO NOT PUSH TO PUBLIC GITHUB)
+# ============================================================================
+
+# Internal docs directory
+docs/
+
+# Status and progress files
+STATUS.md
+ORGANIZATION_COMPLETE.md
+*_STATUS.md
+*_PROGRESS*.md
+DECAY_*.md
+🎉_ALL_DONE.txt
+README_FOR_WRITER.txt
+README_INTERNAL.md
+README_OLD.md
+
+# Planning and organization files
+*_PLAN.md
+*_SUMMARY.md
+GITHUB_*.md
+CGAR_GITHUB_*.md
+
+# ============================================================================
+# Python Virtual Environments (HUGE - TRMvenv has 10MB+ files)
+# ============================================================================
+
+# Virtual environments
+TRMvenv/
+.venv/
+venv/
+venv
+ENV/
+env/
+.virtualenv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============================================================================
+# Temporary & Experimental Scripts (NOT FOR PUBLIC RELEASE)
+# ============================================================================
+
+# Analysis scripts (paper-specific)
+analyze_*.py
+create_*_figures*.py
+generate_*.py
+make_*.py
+sample_*.py
+
+# Temporary test scripts
+check_*.py
+test_decay*.py
+eval_curr*.py
+upload_to_huggingface.py
+
+# Archive directories
+archive/
+archived/
+*_archive/
+scripts_archive/
+
+# ============================================================================
+# Generated Files & Outputs
+# ============================================================================
+
+# Generated images
+*.png
+*.pdf
+*.svg
+*.jpg
+*.jpeg
+!assets/*.png
+!assets/*.pdf
+!assets/*.jpg
+!README*.png
+
+# HTML files
+*.html
+
+# JSON results
+*.json
+!configs/*.json
+!*config*.json
+!package*.json
+
+# Temporary data
+real_*.json
+tmp/
+temp/
+*.tmp
+*.bak
+
+# ============================================================================
+# IDE & Editor Files
+# ============================================================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+\#*\#
+.\#*
+
+# ============================================================================
+# Operating System Files
+# ============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ============================================================================
+# Testing & Coverage
+# ============================================================================
+
+.pytest_cache/
+.coverage
+.tox/
+htmlcov/
+*.cover
+
+# ============================================================================
+# Bash Scripts (Experimental runs)
+# ============================================================================
+
+run_*.sh
+test_*.sh
+eval_*.sh
+!scripts/*.sh
+
+# ============================================================================
+# Ablations (Keep configs, exclude results)
+# ============================================================================
+
+ablations/results/
+ablations/models/
+
+# ============================================================================
+# Git & Version Control
+# ============================================================================
+
+*.orig
+*.rej
+.git/
