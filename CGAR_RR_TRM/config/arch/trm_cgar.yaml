@@ -1,0 +1,32 @@
+name: recursive_reasoning.trm_cgar@TinyRecursiveReasoningModel_ACTV1_CGAR
+loss:
+  name: losses_cgar@ACTLossHead_CGAR
+  loss_type: stablemax_cross_entropy
+  supervision_decay: 0.7  # Exponential decay for supervision weighting (early steps ~7x more important)
+  # RR: New loss mods
+  enable_brier_halting: false
+  enable_monotonicity: false
+  enable_smoothness: false
+
+halt_exploration_prob: 0.1
+halt_max_steps: 16
+
+# Base recursion depth (will be progressively increased during training)
+H_cycles: 3  # Final depth (starts at 1, ramps to 3)
+L_cycles: 6  # Final depth (starts at 2, ramps to 6)
+
+H_layers: 0
+L_layers: 2
+
+hidden_size: 512
+num_heads: 8
+expansion: 4
+
+puzzle_emb_ndim: ${.hidden_size}
+
+pos_encodings: rope
+forward_dtype: bfloat16
+
+mlp_t: False  # Set to True for Sudoku (better performance)
+puzzle_emb_len: 16
+no_ACT_continue: True
