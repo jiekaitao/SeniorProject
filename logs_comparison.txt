@@ -1,0 +1,557 @@
+==========================================
+  Phase 1: BASELINE RNAformer (cycling=6)
+  batch=2, accumulate=8 → effective=16
+==========================================
+Seed set to 42
+[23:26:16][INFO] === Training BASELINE variant ===
+[23:26:16][INFO] Model: dim=128, heads=4, layers=4
+[23:26:16][INFO] Baseline: cycling=6, no TRM features
+[23:26:16][INFO] Loading data...
+[23:26:16][INFO] Trainable parameters: 5,306,241
+Using bfloat16 Automatic Mixed Precision (AMP)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+[23:26:16][INFO] Starting training...
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/utilities/parsing.py:45: Attribute 'data_module' removed from hparams because it cannot be pickled. You can suppress this warning by setting `self.save_hyperparameters(ignore=['data_module'])`.
+You are using a CUDA device ('NVIDIA GeForce RTX 5090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+wandb: WARNING The anonymous setting has no effect and will be removed in a future version.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/jietao/.netrc.
+wandb: Currently logged in as: jiekaitao (jiekaitao-university-of-florida) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 8f3qyfiq
+wandb: Tracking run with wandb version 0.25.0
+wandb: Run data is saved locally in wandb/run-20260219_232617-8f3qyfiq
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run baseline_dim128_L4
+wandb: ⭐️ View project at https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison
+wandb: 🚀 View run at https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison/runs/8f3qyfiq
+[23:26:36][INFO] Load preprocessed data from /mnt/Data/GitHub/SeniorProject/cache/baseline/bprna_data_len16200_oversampling1_seed42_v7.pth .
+[23:26:36][INFO] Load preprocessed train 73602 samples
+[23:26:36][INFO] Load preprocessed bprna_ts0 1580 samples
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:881: Checkpoint directory /mnt/Data/GitHub/SeniorProject/checkpoints/baseline exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:242: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
+instantiate: keys missing ['differentiable', 'amsgrad', 'foreach', 'capturable', 'maximize', 'fused', 'params']
+┏━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃   ┃ Name       ┃ Type              ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0 │ model      │ RiboFormer        │  5.3 M │ train │     0 │
+│ 1 │ loss_train │ BCEWithLogitsLoss │      0 │ train │     0 │
+│ 2 │ loss_valid │ BCEWithLogitsLoss │      0 │ train │     0 │
+└───┴────────────┴───────────────────┴────────┴───────┴───────┘
+Trainable params: 5.3 M                                                         
+Non-trainable params: 66                                                        
+Total params: 5.3 M                                                             
+Total estimated model params size (MB): 21                                      
+Modules in train mode: 93                                                       
+Modules in eval mode: 0                                                         
+Total FLOPs: 0                                                                  
+[23:26:36][INFO] Finished loading validation data
+val/bprna_ts0/f1_score tensor(0.0086, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.0086, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+[23:26:38][INFO] Finished loading training data
+val/bprna_ts0/f1_score tensor(0.3753, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.3753, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4451, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0430, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4451, device='cuda:0') 0
+val/all_ts/solved tensor(0.0430, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4392, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0342, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4392, device='cuda:0') 0
+val/all_ts/solved tensor(0.0342, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.3492, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0038, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.3492, device='cuda:0') 0
+val/all_ts/solved tensor(0.0038, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4140, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0342, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4140, device='cuda:0') 0
+val/all_ts/solved tensor(0.0342, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4921, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0437, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4921, device='cuda:0') 0
+val/all_ts/solved tensor(0.0437, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4469, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0525, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4469, device='cuda:0') 0
+val/all_ts/solved tensor(0.0525, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4885, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0418, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4885, device='cuda:0') 0
+val/all_ts/solved tensor(0.0418, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4685, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0589, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4685, device='cuda:0') 0
+val/all_ts/solved tensor(0.0589, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4276, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0177, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4276, device='cuda:0') 0
+val/all_ts/solved tensor(0.0177, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.2968, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0234, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.2968, device='cuda:0') 0
+val/all_ts/solved tensor(0.0234, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4523, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0443, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4523, device='cuda:0') 0
+val/all_ts/solved tensor(0.0443, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4794, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0753, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4794, device='cuda:0') 0
+val/all_ts/solved tensor(0.0753, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4987, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0582, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4987, device='cuda:0') 0
+val/all_ts/solved tensor(0.0582, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4047, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0677, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4047, device='cuda:0') 0
+val/all_ts/solved tensor(0.0677, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4745, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0652, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4745, device='cuda:0') 0
+val/all_ts/solved tensor(0.0652, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4715, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0722, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4715, device='cuda:0') 0
+val/all_ts/solved tensor(0.0722, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4928, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0715, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4928, device='cuda:0') 0
+val/all_ts/solved tensor(0.0715, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4335, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0741, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4335, device='cuda:0') 0
+val/all_ts/solved tensor(0.0741, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5016, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0778, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5016, device='cuda:0') 0
+val/all_ts/solved tensor(0.0778, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4374, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0576, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4374, device='cuda:0') 0
+val/all_ts/solved tensor(0.0576, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5041, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0709, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5041, device='cuda:0') 0
+val/all_ts/solved tensor(0.0709, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4512, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0614, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4512, device='cuda:0') 0
+val/all_ts/solved tensor(0.0614, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4868, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0722, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4868, device='cuda:0') 0
+val/all_ts/solved tensor(0.0722, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.3564, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0551, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.3564, device='cuda:0') 0
+val/all_ts/solved tensor(0.0551, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4586, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0241, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4586, device='cuda:0') 0
+val/all_ts/solved tensor(0.0241, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4490, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0538, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4490, device='cuda:0') 0
+val/all_ts/solved tensor(0.0538, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4452, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0582, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4452, device='cuda:0') 0
+val/all_ts/solved tensor(0.0582, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4320, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0785, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4320, device='cuda:0') 0
+val/all_ts/solved tensor(0.0785, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4980, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0715, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4980, device='cuda:0') 0
+val/all_ts/solved tensor(0.0715, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4216, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0380, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4216, device='cuda:0') 0
+val/all_ts/solved tensor(0.0380, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4722, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0551, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4722, device='cuda:0') 0
+val/all_ts/solved tensor(0.0551, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4689, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0772, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4689, device='cuda:0') 0
+val/all_ts/solved tensor(0.0772, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5081, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0671, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5081, device='cuda:0') 0
+val/all_ts/solved tensor(0.0671, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4443, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0608, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4443, device='cuda:0') 0
+val/all_ts/solved tensor(0.0608, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4994, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0854, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4994, device='cuda:0') 0
+val/all_ts/solved tensor(0.0854, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4782, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0722, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4782, device='cuda:0') 0
+val/all_ts/solved tensor(0.0722, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4895, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0867, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4895, device='cuda:0') 0
+val/all_ts/solved tensor(0.0867, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4822, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0696, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4822, device='cuda:0') 0
+val/all_ts/solved tensor(0.0696, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5153, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0816, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5153, device='cuda:0') 0
+val/all_ts/solved tensor(0.0816, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4712, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0848, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4712, device='cuda:0') 0
+val/all_ts/solved tensor(0.0848, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4900, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0835, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4900, device='cuda:0') 0
+val/all_ts/solved tensor(0.0835, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4800, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0734, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4800, device='cuda:0') 0
+val/all_ts/solved tensor(0.0734, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5078, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0671, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5078, device='cuda:0') 0
+val/all_ts/solved tensor(0.0671, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4777, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0684, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4777, device='cuda:0') 0
+val/all_ts/solved tensor(0.0684, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5151, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0797, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5151, device='cuda:0') 0
+val/all_ts/solved tensor(0.0797, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5087, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0810, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5087, device='cuda:0') 0
+val/all_ts/solved tensor(0.0810, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4957, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0854, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4957, device='cuda:0') 0
+val/all_ts/solved tensor(0.0854, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4660, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0646, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4660, device='cuda:0') 0
+val/all_ts/solved tensor(0.0646, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4858, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0816, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4858, device='cuda:0') 0
+val/all_ts/solved tensor(0.0816, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4867, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0829, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4867, device='cuda:0') 0
+val/all_ts/solved tensor(0.0829, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5125, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0797, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5125, device='cuda:0') 0
+val/all_ts/solved tensor(0.0797, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5107, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0797, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5107, device='cuda:0') 0
+val/all_ts/solved tensor(0.0797, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5305, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0842, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5305, device='cuda:0') 0
+val/all_ts/solved tensor(0.0842, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4998, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0797, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4998, device='cuda:0') 0
+val/all_ts/solved tensor(0.0797, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5026, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0816, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5026, device='cuda:0') 0
+val/all_ts/solved tensor(0.0816, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4850, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0835, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4850, device='cuda:0') 0
+val/all_ts/solved tensor(0.0835, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5287, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0823, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5287, device='cuda:0') 0
+val/all_ts/solved tensor(0.0823, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5129, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0816, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5129, device='cuda:0') 0
+val/all_ts/solved tensor(0.0816, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5336, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0848, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5336, device='cuda:0') 0
+val/all_ts/solved tensor(0.0848, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5110, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0880, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5110, device='cuda:0') 0
+val/all_ts/solved tensor(0.0880, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5235, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0911, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5235, device='cuda:0') 0
+val/all_ts/solved tensor(0.0911, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5313, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0854, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5313, device='cuda:0') 0
+val/all_ts/solved tensor(0.0854, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5611, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0861, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5611, device='cuda:0') 0
+val/all_ts/solved tensor(0.0861, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5266, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0873, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5266, device='cuda:0') 0
+val/all_ts/solved tensor(0.0873, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5034, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0949, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5034, device='cuda:0') 0
+val/all_ts/solved tensor(0.0949, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5466, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0848, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5466, device='cuda:0') 0
+val/all_ts/solved tensor(0.0848, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5479, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0797, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5479, device='cuda:0') 0
+val/all_ts/solved tensor(0.0797, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.4934, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0899, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.4934, device='cuda:0') 0
+val/all_ts/solved tensor(0.0899, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5044, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0911, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5044, device='cuda:0') 0
+val/all_ts/solved tensor(0.0911, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5482, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1500, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5482, device='cuda:0') 0
+val/all_ts/solved tensor(0.1500, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5438, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1500, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5438, device='cuda:0') 0
+val/all_ts/solved tensor(0.1500, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5484, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0880, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5484, device='cuda:0') 0
+val/all_ts/solved tensor(0.0880, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5198, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1506, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5198, device='cuda:0') 0
+val/all_ts/solved tensor(0.1506, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5568, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0854, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5568, device='cuda:0') 0
+val/all_ts/solved tensor(0.0854, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5485, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1538, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5485, device='cuda:0') 0
+val/all_ts/solved tensor(0.1538, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5512, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0892, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5512, device='cuda:0') 0
+val/all_ts/solved tensor(0.0892, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5346, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1513, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5346, device='cuda:0') 0
+val/all_ts/solved tensor(0.1513, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5289, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1500, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5289, device='cuda:0') 0
+val/all_ts/solved tensor(0.1500, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5302, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1519, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5302, device='cuda:0') 0
+val/all_ts/solved tensor(0.1519, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5443, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0943, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5443, device='cuda:0') 0
+val/all_ts/solved tensor(0.0943, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5259, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0911, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5259, device='cuda:0') 0
+val/all_ts/solved tensor(0.0911, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5747, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0892, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5747, device='cuda:0') 0
+val/all_ts/solved tensor(0.0892, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5530, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1538, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5530, device='cuda:0') 0
+val/all_ts/solved tensor(0.1538, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5564, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1532, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5564, device='cuda:0') 0
+val/all_ts/solved tensor(0.1532, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5462, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1506, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5462, device='cuda:0') 0
+val/all_ts/solved tensor(0.1506, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5651, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1532, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5651, device='cuda:0') 0
+val/all_ts/solved tensor(0.1532, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5429, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0918, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5429, device='cuda:0') 0
+val/all_ts/solved tensor(0.0918, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5756, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1532, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5756, device='cuda:0') 0
+val/all_ts/solved tensor(0.1532, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5424, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1570, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5424, device='cuda:0') 0
+val/all_ts/solved tensor(0.1570, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5617, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1551, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5617, device='cuda:0') 0
+val/all_ts/solved tensor(0.1551, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5605, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1519, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5605, device='cuda:0') 0
+val/all_ts/solved tensor(0.1519, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5671, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0930, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5671, device='cuda:0') 0
+val/all_ts/solved tensor(0.0930, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5579, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1563, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5579, device='cuda:0') 0
+val/all_ts/solved tensor(0.1563, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5798, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1551, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5798, device='cuda:0') 0
+val/all_ts/solved tensor(0.1551, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5685, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1544, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5685, device='cuda:0') 0
+val/all_ts/solved tensor(0.1544, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5764, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1551, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5764, device='cuda:0') 0
+val/all_ts/solved tensor(0.1551, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5735, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1563, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5735, device='cuda:0') 0
+val/all_ts/solved tensor(0.1563, device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.5745, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.1500, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5745, device='cuda:0') 0
+val/all_ts/solved tensor(0.1500, device='cuda:0') 0
+`Trainer.fit` stopped: `max_epochs=50` reached.
+val/bprna_ts0/f1_score tensor(0.5686, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0.0937, device='cuda:0') 0
+val/all_ts/f1_score tensor(0.5686, device='cuda:0') 0
+val/all_ts/solved tensor(0.0937, device='cuda:0') 0
+Epoch 49/49 ━━━━━━━━━━━━━━━ 36801/36801 0:28:15 •       0.00it/s v_num: yfiq    
+                                        0:00:00                  train/loss:    
+                                                                 0.000          
+                                                                 val/bprna_ts0/…
+                                                                 0.008          
+[20:53:30][INFO] Training complete!
+[20:53:30][INFO] wandb run: https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison/runs/8f3qyfiq
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mbaseline_dim128_L4[0m at: [34mhttps://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison/runs/8f3qyfiq[0m
+
+==========================================
+  Phase 2: TRM RNAformer (dual-state+CGAR+ACT+RR)
+  batch=1, accumulate=16 → effective=16
+==========================================
+Seed set to 42
+[20:53:35][INFO] === Training TRM variant ===
+[20:53:35][INFO] Model: dim=128, heads=4, layers=4
+[20:53:35][INFO] TRM: dual_state=True, H=2, L=3, CGAR=True, ACT=True, cycling=6
+[20:53:35][INFO] Loading data...
+[20:53:35][INFO] Trainable parameters: 5,306,882
+Using bfloat16 Automatic Mixed Precision (AMP)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+[20:53:35][INFO] Starting training...
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/utilities/parsing.py:45: Attribute 'data_module' removed from hparams because it cannot be pickled. You can suppress this warning by setting `self.save_hyperparameters(ignore=['data_module'])`.
+You are using a CUDA device ('NVIDIA GeForce RTX 5090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+[20:53:35][INFO] Checked preprocessed data: /mnt/Data/GitHub/SeniorProject/cache/trm/bprna_data_len16200_oversampling1_seed42_v7.pth does not exist.
+[20:53:35][INFO] Start prepare data
+[20:53:36][INFO] Finished loading dataframe (shape: (82118, 5))
+[20:53:40][INFO] Finished preprocessing 73602 train samples
+[20:53:40][INFO] Finished preprocessing 1580 bprna_ts0 samples
+[20:53:48][INFO] Dumped samples.
+wandb: WARNING The anonymous setting has no effect and will be removed in a future version.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/jietao/.netrc.
+wandb: Currently logged in as: jiekaitao (jiekaitao-university-of-florida) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run edd73ey0
+wandb: Tracking run with wandb version 0.25.0
+wandb: Run data is saved locally in wandb/run-20260220_205349-edd73ey0
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run trm_dim128_L4
+wandb: ⭐️ View project at https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison
+wandb: 🚀 View run at https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison/runs/edd73ey0
+[20:54:09][INFO] Load preprocessed data from /mnt/Data/GitHub/SeniorProject/cache/trm/bprna_data_len16200_oversampling1_seed42_v7.pth .
+[20:54:09][INFO] Load preprocessed train 73602 samples
+[20:54:09][INFO] Load preprocessed bprna_ts0 1580 samples
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:242: Precision bf16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
+instantiate: keys missing ['foreach', 'capturable', 'params', 'differentiable', 'fused', 'maximize', 'amsgrad']
+┏━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃   ┃ Name       ┃ Type              ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0 │ model      │ RiboFormerTRM     │  5.3 M │ train │     0 │
+│ 1 │ loss_train │ BCEWithLogitsLoss │      0 │ train │     0 │
+│ 2 │ loss_valid │ BCEWithLogitsLoss │      0 │ train │     0 │
+│ 3 │ act_loss   │ RNAACTLoss        │      0 │ train │     0 │
+└───┴────────────┴───────────────────┴────────┴───────┴───────┘
+Trainable params: 5.3 M                                                         
+Non-trainable params: 66                                                        
+Total params: 5.3 M                                                             
+Total estimated model params size (MB): 21                                      
+Modules in train mode: 99                                                       
+Modules in eval mode: 0                                                         
+Total FLOPs: 0                                                                  
+[20:54:09][INFO] Finished loading validation data
+val/bprna_ts0/f1_score tensor(0.0120, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.0120, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+[20:54:10][INFO] Finished loading training data
+val/bprna_ts0/f1_score tensor(0.3657, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.3657, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.3383, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.3383, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.1582, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.1582, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.3526, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.3526, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.0004, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.0004, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.2654, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.2654, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.2854, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.2854, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+val/bprna_ts0/f1_score tensor(0.0166, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.0166, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0

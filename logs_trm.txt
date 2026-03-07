@@ -1,0 +1,262 @@
+Seed set to 42
+[14:46:10][INFO] === Training TRM variant ===
+[14:46:10][INFO] Model: dim=128, heads=4, layers=4
+[14:46:10][INFO] TRM: dual_state=True, H=2, L=3, CGAR=True, ACT=True, cycling=6
+[14:46:10][INFO] Loading data...
+[14:46:10][INFO] Trainable parameters: 5,306,882
+Using 16bit Automatic Mixed Precision (AMP)
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+[14:46:10][INFO] Starting training...
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/utilities/parsing.py:45: Attribute 'data_module' removed from hparams because it cannot be pickled. You can suppress this warning by setting `self.save_hyperparameters(ignore=['data_module'])`.
+You are using a CUDA device ('NVIDIA GeForce RTX 5090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+[14:46:10][INFO] Checked preprocessed data: /mnt/Data/GitHub/SeniorProject/cache/trm/bprna_data_len16200_oversampling1_seed42_v7.pth does not exist.
+[14:46:10][INFO] Start prepare data
+[14:46:10][INFO] Finished loading dataframe (shape: (82118, 5))
+[14:46:14][INFO] Finished preprocessing 73602 train samples
+[14:46:14][INFO] Finished preprocessing 1580 bprna_ts0 samples
+[14:46:23][INFO] Dumped samples.
+wandb: WARNING The anonymous setting has no effect and will be removed in a future version.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/jietao/.netrc.
+wandb: Currently logged in as: jiekaitao (jiekaitao-university-of-florida) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 9acpnito
+wandb: Tracking run with wandb version 0.25.0
+wandb: Run data is saved locally in wandb/run-20260219_144624-9acpnito
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run trm_dim128_L4
+wandb: ⭐️ View project at https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison
+wandb: 🚀 View run at https://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison/runs/9acpnito
+[14:46:44][INFO] Load preprocessed data from /mnt/Data/GitHub/SeniorProject/cache/trm/bprna_data_len16200_oversampling1_seed42_v7.pth .
+[14:46:44][INFO] Load preprocessed train 73602 samples
+[14:46:44][INFO] Load preprocessed bprna_ts0 1580 samples
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/utilities/model_summary/model_summary.py:242: Precision 16-mixed is not supported by the model summary.  Estimated model size in MB will not be accurate. Using 32 bits instead.
+instantiate: keys missing ['amsgrad', 'foreach', 'maximize', 'capturable', 'differentiable', 'params', 'fused']
+┏━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┓
+┃   ┃ Name       ┃ Type              ┃ Params ┃ Mode  ┃ FLOPs ┃
+┡━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━┩
+│ 0 │ model      │ RiboFormerTRM     │  5.3 M │ train │     0 │
+│ 1 │ loss_train │ BCEWithLogitsLoss │      0 │ train │     0 │
+│ 2 │ loss_valid │ BCEWithLogitsLoss │      0 │ train │     0 │
+│ 3 │ act_loss   │ RNAACTLoss        │      0 │ train │     0 │
+└───┴────────────┴───────────────────┴────────┴───────┴───────┘
+Trainable params: 5.3 M                                                         
+Non-trainable params: 66                                                        
+Total params: 5.3 M                                                             
+Total estimated model params size (MB): 21                                      
+Modules in train mode: 99                                                       
+Modules in eval mode: 0                                                         
+Total FLOPs: 0                                                                  
+[14:46:44][INFO] Finished loading validation data
+val/bprna_ts0/f1_score tensor(0.0114, device='cuda:0') 0
+val/bprna_ts0/solved tensor(0., device='cuda:0') 0
+val/all_ts/f1_score tensor(0.0114, device='cuda:0') 0
+val/all_ts/solved tensor(0., device='cuda:0') 0
+[14:46:46][INFO] Finished loading training data
+Epoch 0/49                  16/18400 0:00:01 •       15.40it/s v_num: nito      
+                                     0:19:54                   train/loss: 0.870
+Traceback (most recent call last):
+  File "/mnt/Data/GitHub/SeniorProject/train_comparison.py", line 350, in <module>
+    main()
+  File "/mnt/Data/GitHub/SeniorProject/train_comparison.py", line 342, in main
+    trainer.fit(model=model_module, datamodule=data_module)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 584, in fit
+    call._call_and_handle_interrupt(
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py", line 49, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 630, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path, weights_only=weights_only)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 1079, in _run
+    results = self._run_stage()
+              ^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 1123, in _run_stage
+    self.fit_loop.run()
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py", line 217, in run
+    self.advance()
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py", line 465, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 153, in run
+    self.advance(data_fetcher)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 352, in advance
+    batch_output = self.automatic_optimization.run(trainer.optimizers[0], batch_idx, kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 185, in run
+    closure()
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 146, in __call__
+    self._result = self.closure(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 131, in closure
+    step_output = self._step_fn()
+                  ^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 319, in _training_step
+    training_step_output = call._call_strategy_hook(trainer, "training_step", *kwargs.values())
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py", line 329, in _call_strategy_hook
+    output = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/strategies/strategy.py", line 391, in training_step
+    return self.lightning_module.training_step(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/trainer/rna_trm_trainer.py", line 71, in training_step
+    result = self.model(batch['src_seq'], batch['length'], batch['pdb_sample'],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_TRM.py", line 208, in forward
+    latent = self.forward_dual_state(pair_latent, pair_mask, input_embed)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_TRM.py", line 191, in forward_dual_state
+    z_H = self.RNAformer(pair_act=zh_input, pair_mask=pair_mask, cycle_infer=False)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_stack.py", line 22, in forward
+    pair_act = layer(pair_act, pair_mask, cycle_infer=cycle_infer)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_block.py", line 40, in forward
+    pair_act = pair_act + self.res_dropout(self.pair_transition(pair_act))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/module/feed_forward.py", line 97, in forward
+    x = self.act(self.conv1(x))
+                 ^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 142.00 MiB. GPU 0 has a total capacity of 31.36 GiB of which 21.75 MiB is free. Process 204734 has 582.00 MiB memory in use. Process 205404 has 922.00 MiB memory in use. Process 204991 has 668.00 MiB memory in use. Process 204930 has 2.20 GiB memory in use. Process 206746 has 562.00 MiB memory in use. Process 208080 has 694.00 MiB memory in use. Process 1887739 has 3.65 GiB memory in use. Process 2506975 has 1.02 GiB memory in use. Process 4006802 has 3.62 GiB memory in use. Including non-PyTorch memory, this process has 17.43 GiB memory in use. Of the allocated memory 15.71 GiB is allocated by PyTorch, and 1.12 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "/mnt/Data/GitHub/SeniorProject/train_comparison.py", line 350, in <module>
+    main()
+  File "/mnt/Data/GitHub/SeniorProject/train_comparison.py", line 342, in main
+    trainer.fit(model=model_module, datamodule=data_module)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 584, in fit
+    call._call_and_handle_interrupt(
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py", line 49, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 630, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path, weights_only=weights_only)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 1079, in _run
+    results = self._run_stage()
+              ^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/trainer.py", line 1123, in _run_stage
+    self.fit_loop.run()
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py", line 217, in run
+    self.advance()
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/fit_loop.py", line 465, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 153, in run
+    self.advance(data_fetcher)
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 352, in advance
+    batch_output = self.automatic_optimization.run(trainer.optimizers[0], batch_idx, kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 185, in run
+    closure()
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 146, in __call__
+    self._result = self.closure(*args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 131, in closure
+    step_output = self._step_fn()
+                  ^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 319, in _training_step
+    training_step_output = call._call_strategy_hook(trainer, "training_step", *kwargs.values())
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/trainer/call.py", line 329, in _call_strategy_hook
+    output = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/pytorch_lightning/strategies/strategy.py", line 391, in training_step
+    return self.lightning_module.training_step(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/trainer/rna_trm_trainer.py", line 71, in training_step
+    result = self.model(batch['src_seq'], batch['length'], batch['pdb_sample'],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_TRM.py", line 208, in forward
+    latent = self.forward_dual_state(pair_latent, pair_mask, input_embed)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_TRM.py", line 191, in forward_dual_state
+    z_H = self.RNAformer(pair_act=zh_input, pair_mask=pair_mask, cycle_infer=False)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_stack.py", line 22, in forward
+    pair_act = layer(pair_act, pair_mask, cycle_infer=cycle_infer)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/model/RNAformer_block.py", line 40, in forward
+    pair_act = pair_act + self.res_dropout(self.pair_transition(pair_act))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/Data/GitHub/SeniorProject/RNAformer_TRM/module/feed_forward.py", line 97, in forward
+    x = self.act(self.conv1(x))
+                 ^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jietao/.local/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 142.00 MiB. GPU 0 has a total capacity of 31.36 GiB of which 21.75 MiB is free. Process 204734 has 582.00 MiB memory in use. Process 205404 has 922.00 MiB memory in use. Process 204991 has 668.00 MiB memory in use. Process 204930 has 2.20 GiB memory in use. Process 206746 has 562.00 MiB memory in use. Process 208080 has 694.00 MiB memory in use. Process 1887739 has 3.65 GiB memory in use. Process 2506975 has 1.02 GiB memory in use. Process 4006802 has 3.62 GiB memory in use. Including non-PyTorch memory, this process has 17.43 GiB memory in use. Of the allocated memory 15.71 GiB is allocated by PyTorch, and 1.12 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mtrm_dim128_L4[0m at: [34mhttps://wandb.ai/jiekaitao-university-of-florida/RNAformer-TRM-comparison/runs/9acpnito[0m

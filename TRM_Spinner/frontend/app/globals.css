@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gator-50: #f0f7f0;
+  --color-gator-100: #e8f5e9;
+  --color-gator-200: #c8e6c9;
+  --color-gator-500: #2d5a3d;
+  --color-gator-600: #1a3a2a;
+  --color-gator-700: #0f2518;
+  --color-cream: #f5f0e8;
+  --color-amber-accent: #d4a574;
+
+  --font-heading: var(--font-caveat), cursive;
+  --font-body: var(--font-patrick-hand), cursive;
+}
+
+html {
+  font-size: 24px;
+}
+
+body {
+  background-color: var(--color-gator-50);
+  color: var(--color-gator-600);
+  font-family: var(--font-body);
+}
+
+input,
+textarea {
+  font-family: var(--font-body);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d5a3d40;
+  border-radius: 3px;
+}
+
+@keyframes gator-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.gator-spin {
+  animation: gator-spin 2s linear infinite;
+}
