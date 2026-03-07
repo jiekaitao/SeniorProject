@@ -15,7 +15,6 @@ checkpoints/
 
 # Training data (1.3GB - too large for GitHub)
 data/
-dataset/
 *.pkl
 *.pickle
 
