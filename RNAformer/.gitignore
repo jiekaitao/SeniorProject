@@ -1,0 +1,15 @@
+
+*.pt
+*cache*
+*/cache*
+*plk
+*venv
+.idea
+*.iml
+*.pyc
+*.xml
+/build
+/dist
+/models
+/datasets
+*RNAformer.egg-info
