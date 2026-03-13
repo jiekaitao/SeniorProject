@@ -1,6 +1,4 @@
-# Ablation Run 2: Brier halting ONLY (no monotonicity, keep stablemax)
-# Isolates the effect of switching BCE -> Brier for halting loss
-# Usage: python pretrain.py --config-name=cfg_ablation_brier_only +run_name=ABLATION_BRIER_ONLY
+# Ablation: Brier halting only (Brier + stablemax + no monotonicity)
 
 defaults:
   - arch: trm
@@ -9,24 +7,23 @@ defaults:
 hydra:
   output_subdir: null
 
-project_name: SeniorProjectTRM
+# Loss overrides
+arch:
+  loss:
+    loss_type: stablemax_cross_entropy
+    enable_brier_halting: true
+    enable_monotonicity: false
 
+# Data
 data_paths: ['data/maze-30x30-hard-1k']
 data_paths_test: []
 evaluators: []
 
-# Override: Brier halting only, keep stablemax, no monotonicity
-arch:
-  loss:
-    enable_brier_halting: true
-    enable_monotonicity: false
-    loss_type: stablemax_cross_entropy
-  L_cycles: 4
-
-# Match original training hyperparams
-global_batch_size: 128
-epochs: 10000
-eval_interval: 200
+# Training
+project_name: SeniorProjectTRM
+global_batch_size: 256
+epochs: 5000
+eval_interval: 500
 checkpoint_every_eval: True
 
 lr: 1e-4
@@ -36,16 +33,13 @@ lr_warmup_steps: 2000
 beta1: 0.9
 beta2: 0.95
 weight_decay: 1.0
-puzzle_emb_weight_decay: 1.0
+
 puzzle_emb_lr: 1e-4
+puzzle_emb_weight_decay: 1.0
 
 seed: 0
 min_eval_interval: 0
-
 ema: True
 ema_rate: 0.999
 freeze_weights: False
-
 use_muon: False
-muon_lr: 0.02
-muon_momentum: 0.95
