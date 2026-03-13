@@ -25,8 +25,9 @@ data/
 # Wandb logs (853MB)
 wandb/
 
-# Experiment outputs (192MB)
-experiments/
+# Experiment outputs (192MB) - but keep .py scripts
+experiments/*
+!experiments/*.py
 
 # Log files
 logs/
@@ -102,8 +103,8 @@ MANIFEST
 # Temporary & Experimental Scripts (NOT FOR PUBLIC RELEASE)
 # ============================================================================
 
-# Analysis scripts (paper-specific)
-analyze_*.py
+# Analysis scripts (paper-specific, root only)
+/analyze_*.py
 create_*_figures*.py
 generate_*.py
 make_*.py

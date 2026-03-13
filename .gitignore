@@ -1,8 +1,65 @@
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
 
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Conda
+environment.yml
+
+# PyTorch / ML artifacts
 checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+# Data & cache
 data/
-outputs/
+cache/
+
+# PyTorch Lightning
+lightning_logs/
+
+# Weights & Biases
 wandb/
 
-environment.yml
+# Hydra outputs
+outputs/
+
+# Pytest
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Visualizations (generated)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+
+# Logs
+*.log
+logs_*.txt
