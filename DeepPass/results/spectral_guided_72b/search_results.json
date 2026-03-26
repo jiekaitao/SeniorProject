@@ -1,0 +1,215 @@
+{
+  "baseline": 0.6301279175373933,
+  "ng_config": {
+    "config": [
+      45,
+      52
+    ],
+    "score": 0.7184261470596504,
+    "delta": 0.08829822952225708
+  },
+  "spectral_candidates": 117,
+  "evaluated": [
+    {
+      "config": [
+        50,
+        60
+      ],
+      "score": 0.7841958610155773,
+      "delta": 0.15406794347818398,
+      "beats_ng": true,
+      "spectral_score": 0.37302841007774246
+    },
+    {
+      "config": [
+        48,
+        58
+      ],
+      "score": 0.7373771089161617,
+      "delta": 0.10724919137876843,
+      "beats_ng": true,
+      "spectral_score": 0.40711120356904923
+    },
+    {
+      "config": [
+        43,
+        50
+      ],
+      "score": 0.7160830081152981,
+      "delta": 0.08595509057790485,
+      "beats_ng": false,
+      "spectral_score": 0
+    },
+    {
+      "config": [
+        42,
+        52
+      ],
+      "score": 0.7054109399839456,
+      "delta": 0.07528302244655227,
+      "beats_ng": false,
+      "spectral_score": 0.46053098384010527
+    },
+    {
+      "config": [
+        42,
+        52
+      ],
+      "score": 0.7054109399839456,
+      "delta": 0.07528302244655227,
+      "beats_ng": false,
+      "spectral_score": 0
+    },
+    {
+      "config": [
+        42,
+        51
+      ],
+      "score": 0.6932095449252491,
+      "delta": 0.06308162738785583,
+      "beats_ng": false,
+      "spectral_score": 0.38093800769314234
+    },
+    {
+      "config": [
+        48,
+        57
+      ],
+      "score": 0.6925307849547646,
+      "delta": 0.06240286741737133,
+      "beats_ng": false,
+      "spectral_score": 0.4346470816312247
+    },
+    {
+      "config": [
+        44,
+        51
+      ],
+      "score": 0.6662815378265401,
+      "delta": 0.036153620289146815,
+      "beats_ng": false,
+      "spectral_score": 0
+    },
+    {
+      "config": [
+        44,
+        52
+      ],
+      "score": 0.6588711532367405,
+      "delta": 0.028743235699347225,
+      "beats_ng": false,
+      "spectral_score": 0.4221064245182158
+    },
+    {
+      "config": [
+        44,
+        53
+      ],
+      "score": 0.6534294250051942,
+      "delta": 0.023301507467800908,
+      "beats_ng": false,
+      "spectral_score": 0.42570006336269645
+    },
+    {
+      "config": [
+        42,
+        50
+      ],
+      "score": 0.6474184386724801,
+      "delta": 0.017290521135086778,
+      "beats_ng": false,
+      "spectral_score": 0.3636204059730544
+    },
+    {
+      "config": [
+        40,
+        50
+      ],
+      "score": 0.6383325845142304,
+      "delta": 0.008204666976837083,
+      "beats_ng": false,
+      "spectral_score": 0
+    },
+    {
+      "config": [
+        46,
+        53
+      ],
+      "score": 0.6345909037568468,
+      "delta": 0.004462986219453513,
+      "beats_ng": false,
+      "spectral_score": 0
+    },
+    {
+      "config": [
+        46,
+        56
+      ],
+      "score": 0.632763383086542,
+      "delta": 0.00263546554914873,
+      "beats_ng": false,
+      "spectral_score": 0.4316768857993865
+    },
+    {
+      "config": [
+        44,
+        54
+      ],
+      "score": 0.6098670031438552,
+      "delta": -0.020260914393538054,
+      "beats_ng": false,
+      "spectral_score": 0.4755000042587435
+    },
+    {
+      "config": [
+        46,
+        54
+      ],
+      "score": 0.5822070802465957,
+      "delta": -0.04792083729079755,
+      "beats_ng": false,
+      "spectral_score": 0.40988980223506266
+    },
+    {
+      "config": [
+        48,
+        54
+      ],
+      "score": 0.555545141428957,
+      "delta": -0.07458277610843633,
+      "beats_ng": false,
+      "spectral_score": 0.3774230861669716
+    },
+    {
+      "config": [
+        46,
+        55
+      ],
+      "score": 0.5494882892152211,
+      "delta": -0.0806396283221722,
+      "beats_ng": false,
+      "spectral_score": 0.40332906903497245
+    },
+    {
+      "config": [
+        48,
+        56
+      ],
+      "score": 0.5291342894882394,
+      "delta": -0.1009936280491539,
+      "beats_ng": false,
+      "spectral_score": 0.4148011981511869
+    },
+    {
+      "config": [
+        48,
+        55
+      ],
+      "score": 0.5231655887440168,
+      "delta": -0.10696232879337653,
+      "beats_ng": false,
+      "spectral_score": 0.3830864049057762
+    }
+  ],
+  "num_beats_ng": 2
+}

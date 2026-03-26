@@ -1,0 +1,59 @@
+================================================================================
+JUNCTION DIAGNOSIS SUMMARY
+================================================================================
+
+Model: Qwen2-7B-Instruct (28 layers)
+Duplication config: (10, 11) — layer 10 duplicated once
+Number of test prompts: 4
+
+Generated: 2026-03-14 13:59:33
+
+--------------------------------------------------------------------------------
+KEY FINDINGS (averaged across prompts)
+--------------------------------------------------------------------------------
+
+1. SANITY CHECK: Pre-junction layers (0-10)
+   Mean cosine similarity: 1.00000818
+   → PASS: layers before junction are identical
+
+2. JUNCTION IMPACT: Normal layer 10 input vs Dup second pass input
+   Mean cosine similarity: 0.999980
+   → The second pass sees very similar input
+
+3. LAYER 10 SELF-APPLICATION: First output vs Second output
+   Mean cosine similarity: 1.000023
+   → Layer 10 barely changes its output on second application
+
+4. RESIDUAL COMPARISON: Normal vs Dup 2nd pass
+   Mean cosine similarity: 0.767844
+   → Layer 10's residual contribution on 2nd pass is similar to its normal contribution
+
+5. POST-JUNCTION DRIFT:
+   Layer 11: cos=0.999994, angular=0.15deg
+   Layer 12: cos=0.999996, angular=0.13deg
+   Layer 13: cos=0.999997, angular=0.11deg
+   Layer 14: cos=0.999997, angular=0.11deg
+   Layer 15: cos=0.999997, angular=0.11deg
+   ...
+   Layer 25: cos=0.999650, angular=1.33deg
+   Layer 26: cos=0.996562, angular=4.23deg
+   Layer 27: cos=0.948369, angular=18.38deg
+
+6. FINAL OUTPUT IMPACT:
+   Final hidden state cosine sim: 0.962035
+   Final hidden state L2 dist: 256.1716
+   Drift trend: AMPLIFYING
+
+7. STRUCTURE OF THE DIFFERENCE:
+   Mean shift ratio: 0.1675
+   → Mostly per-token variation
+   SVD rank for 90% energy: 6.8
+   SVD rank for 99% energy: 11.5
+   → Difference is HIGH RANK (distributed)
+
+8. IMPLICATIONS FOR FINE-TUNING:
+   → RECOMMENDATION: Full fine-tuning of junction layers needed.
+     Consider KL-div on output distributions + MSE on hidden states.
+   NOTE: Layer 10 is nearly idempotent (second pass barely changes output).
+   The performance drop may come from downstream layers seeing
+   slightly out-of-distribution activations that amplify through the network.

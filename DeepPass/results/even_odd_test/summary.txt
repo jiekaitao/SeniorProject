@@ -1,0 +1,36 @@
+Even/Odd Parity Test Summary
+Date: 20260314_122231
+Model: /blue/cis4914/jietao/DeepPass/models/small/Qwen2-7B-Instruct
+
+EXPERIMENT 1: Block (10,11) — single layer
+  Passes  Total  Extra   Parity    Score      Delta
+       1     28      0     EVEN   0.5344    +0.0000
+       2     29      1      ODD   0.7915    +0.2571
+       3     30      2     EVEN   0.7328    +0.1984
+       4     31      3      ODD   0.5877    +0.0533
+       5     32      4     EVEN   0.4434    -0.0910
+       6     33      5      ODD   0.4501    -0.0843
+
+EXPERIMENT 2: Block (18,21) — 3 layers
+  Passes  Total  Extra   Parity    Score      Delta
+       1     28      0     EVEN   0.5344    +0.0000
+       2     31      3      ODD   0.7693    +0.2349
+       3     34      6     EVEN   0.6237    +0.0893
+       4     37      9      ODD   0.5183    -0.0160
+
+EXPERIMENT 3: Multi-block (10,11)+(14,27)
+Config             B1x   B2x  Total    Score      Delta
+standard_2x2         2     2     42   0.7835    +0.2491
+b1_3x_b2_2x          3     2     43   0.7005    +0.1661
+b1_2x_b2_3x          2     3     55   0.7784    +0.2440
+
+PARITY ANALYSIS:
+  Exp1 avg even delta: +0.0537
+  Exp1 avg odd delta:  +0.0754
+  Exp2 avg even delta: +0.0893
+  Exp2 avg odd delta:  +0.1094
+  Combined even:       +0.0656
+  Combined odd:        +0.0890
+  Even - Odd:          -0.0234
+
+  VERDICT: ODD extra layers perform BETTER (contradicts hypothesis)

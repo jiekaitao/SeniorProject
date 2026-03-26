@@ -1,0 +1,29 @@
+{
+  "systems": {
+    "baseline": 0.5343899465628633,
+    "fixed_10_11": 0.7914545417560247,
+    "fixed_18_21": 0.7692787173218587,
+    "esr_oracle": 0.5050133267344593,
+    "dsg_router": 0.8184845136248469,
+    "hybrid": 0.751460265624118
+  },
+  "baseline": 0.5343899465628633,
+  "esr_decisions": {
+    "System: You are a math calculator. Answer with ONL": "mid_wide_14_17"
+  },
+  "dsg_decisions": {
+    "System: You are a math calculator. Answer with ONL": [
+      "mid_good_10_11",
+      0.5639493465423584
+    ]
+  },
+  "hybrid_decisions": {
+    "System: You are a math calculator. Answer with ONL": [
+      "mid_good_10_11",
+      "esr_fallback",
+      0.5639493465423584
+    ]
+  },
+  "fallback_rate": 1.0,
+  "dsg_avg_confidence": 0.5639493465423584
+}

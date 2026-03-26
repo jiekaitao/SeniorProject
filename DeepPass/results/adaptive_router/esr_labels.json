@@ -1,0 +1,2202 @@
+[
+  {
+    "task": "arithmetic",
+    "prompt": "What is 78313 multiplied by 88537?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.14210904851749623,
+      "mid_wide_14_17": 0.6595006666173007,
+      "late_good_18_21": 0.6282472634563264
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8193656508075473,
+        "residual": 4.437818718798802,
+        "margin_gain": -1.625,
+        "score": 0.14210904851749623
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8170965223432531,
+        "residual": 4.898148116601383,
+        "margin_gain": -0.75,
+        "score": 0.6595006666173007
+      },
+      "late_good_18_21": {
+        "rho": 1.0603009612695349,
+        "residual": 5.672962759185934,
+        "margin_gain": -1.0,
+        "score": 0.6282472634563264
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.10436787537144293,
+      0.13867596407480515,
+      0.39030295847542323,
+      0.3666532020783286
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is 9999 multiplied by 9999?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.1288700715348008,
+      "mid_wide_14_17": 1.2137531943226902,
+      "late_good_18_21": 1.554008320170059
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8407496769910308,
+        "residual": 4.40369987316055,
+        "margin_gain": 0.375,
+        "score": 1.1288700715348008
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8582130931694673,
+        "residual": 4.918585611367652,
+        "margin_gain": 0.375,
+        "score": 1.2137531943226902
+      },
+      "late_good_18_21": {
+        "rho": 0.9914118623869264,
+        "residual": 5.510934394430684,
+        "margin_gain": 0.875,
+        "score": 1.554008320170059
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.02258933944197849,
+      0.21598700243300553,
+      0.25595060522637114,
+      0.5054730528986449
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "The cube root of 74088 is approximately",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.428785253286481,
+      "mid_wide_14_17": 1.3853281446424277,
+      "late_good_18_21": 1.1454092201224995
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9077510427618612,
+        "residual": 4.441277830575197,
+        "margin_gain": 1.0,
+        "score": 1.428785253286481
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9390838662059056,
+        "residual": 4.960266522520996,
+        "margin_gain": 0.75,
+        "score": 1.3853281446424277
+      },
+      "late_good_18_21": {
+        "rho": 0.8908548335330085,
+        "residual": 5.192103350912011,
+        "margin_gain": 0.125,
+        "score": 1.1454092201224995
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.02258800243180686,
+      0.3934639327289469,
+      0.3607103164723871,
+      0.22323774836685908
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "The square root of 152399025 is",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8886949717178909,
+      "mid_wide_14_17": 0.33565961463277516,
+      "late_good_18_21": 1.4224643983400007
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9007846160472456,
+        "residual": 4.542876782660323,
+        "margin_gain": -0.125,
+        "score": 0.8886949717178909
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9244958303874731,
+        "residual": 5.002541818745085,
+        "margin_gain": -1.375,
+        "score": 0.33565961463277516
+      },
+      "late_good_18_21": {
+        "rho": 0.8947527956087198,
+        "residual": 5.333226185113083,
+        "margin_gain": 0.625,
+        "score": 1.4224643983400007
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.038355985221302055,
+      0.22685261362508044,
+      0.07505564811333244,
+      0.6597357530402851
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is 123456789 multiplied by 987654321?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.3322526746577232,
+      "mid_wide_14_17": 0.8197161078984776,
+      "late_good_18_21": 1.108849092748142
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9103226202366338,
+        "residual": 4.743722303643566,
+        "margin_gain": 0.6875,
+        "score": 1.3322526746577232
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8724140779217028,
+        "residual": 5.1572016563749425,
+        "margin_gain": -0.5,
+        "score": 0.8197161078984776
+      },
+      "late_good_18_21": {
+        "rho": 0.9724596279930982,
+        "residual": 5.756709905730358,
+        "margin_gain": -0.125,
+        "score": 1.108849092748142
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.03367088487691589,
+      0.4835423313692155,
+      0.1734805916594271,
+      0.3093061920944415
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is 31415 divided by 271?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.2269350010053666,
+      "mid_wide_14_17": 0.862886966463232,
+      "late_good_18_21": 0.8953741331438483
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8801259398610838,
+        "residual": 4.484338914818458,
+        "margin_gain": 0.5625,
+        "score": 1.2269350010053666
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8451267461863925,
+        "residual": 4.863374951595749,
+        "margin_gain": -0.3125,
+        "score": 0.862886966463232
+      },
+      "late_good_18_21": {
+        "rho": 1.0014451866444032,
+        "residual": 5.514063445685846,
+        "margin_gain": -0.4375,
+        "score": 0.8953741331438483
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.04124717803672991,
+      0.4798399933876989,
+      0.23167988947450088,
+      0.24723293910107028
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is 2 to the power of 17?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.2452440714828792,
+      "mid_wide_14_17": 0.8824476406134569,
+      "late_good_18_21": 0.9053594430485497
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8431901190348233,
+        "residual": 4.36423053596663,
+        "margin_gain": 0.625,
+        "score": 1.2452440714828792
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8574237048037089,
+        "residual": 4.8233737602728475,
+        "margin_gain": -0.25,
+        "score": 0.8824476406134569
+      },
+      "late_good_18_21": {
+        "rho": 0.9960733545099523,
+        "residual": 5.399682247007676,
+        "margin_gain": -0.375,
+        "score": 0.9053594430485497
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.03996328560187962,
+      0.4822435686842899,
+      0.23342397935759787,
+      0.2443691663562326
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is 999999 times 7?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8083411285020683,
+      "mid_wide_14_17": 0.5743862481385179,
+      "late_good_18_21": 0.4088172558329842
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8485342644048717,
+        "residual": 4.375232039117649,
+        "margin_gain": -0.25,
+        "score": 0.8083411285020683
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8642548638619605,
+        "residual": 4.85581353648553,
+        "margin_gain": -0.875,
+        "score": 0.5743862481385179
+      },
+      "late_good_18_21": {
+        "rho": 1.0295321682476628,
+        "residual": 5.4671595315364145,
+        "margin_gain": -1.375,
+        "score": 0.4088172558329842
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.08729197203516162,
+      0.4396332063221455,
+      0.2753466905402047,
+      0.19772813110248813
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is 45678 plus 87654?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.9513623902508607,
+      "mid_wide_14_17": 0.9707490008813053,
+      "late_good_18_21": 1.5008959394774566
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9252812777336183,
+        "residual": 4.58045886785473,
+        "margin_gain": 0.0,
+        "score": 0.9513623902508607
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8190775111464879,
+        "residual": 4.894861271126258,
+        "margin_gain": -0.125,
+        "score": 0.9707490008813053
+      },
+      "late_good_18_21": {
+        "rho": 0.9983369035408015,
+        "residual": 5.568260052698486,
+        "margin_gain": 0.75,
+        "score": 1.5008959394774566
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.02873986064192631,
+      0.1926759596304119,
+      0.20029334830889764,
+      0.5782908314187643
+    ]
+  },
+  {
+    "task": "arithmetic",
+    "prompt": "What is the square of 314?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.5939187595412608,
+      "mid_wide_14_17": 1.1194679892891617,
+      "late_good_18_21": 0.5130013418453299
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8499985431876476,
+        "residual": 4.2428166124877755,
+        "margin_gain": -0.625,
+        "score": 0.5939187595412608
+      },
+      "mid_wide_14_17": {
+        "rho": 0.847219577838809,
+        "residual": 4.743169313204022,
+        "margin_gain": 0.25,
+        "score": 1.1194679892891617
+      },
+      "late_good_18_21": {
+        "rho": 0.9289808610685123,
+        "residual": 5.212253000829418,
+        "margin_gain": -1.125,
+        "score": 0.5130013418453299
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.06077839878144928,
+      0.19935197116249126,
+      0.570304495726881,
+      0.1695651343291784
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "If all roses are flowers and some flowers fade quickly, can we conclude that som",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.5608741378020278,
+      "mid_wide_14_17": 0.9835974524718951,
+      "late_good_18_21": 1.2033682381977893
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0314169916078444,
+        "residual": 4.662221176421905,
+        "margin_gain": -0.75,
+        "score": 0.5608741378020278
+      },
+      "mid_wide_14_17": {
+        "rho": 0.7788390297746596,
+        "residual": 4.898745807021465,
+        "margin_gain": -0.125,
+        "score": 0.9835974524718951
+      },
+      "late_good_18_21": {
+        "rho": 0.945811100068838,
+        "residual": 5.564332841092203,
+        "margin_gain": 0.125,
+        "score": 1.2033682381977893
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.044805895051233266,
+      0.13756382515236504,
+      0.3203885960387879,
+      0.4972416837576139
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "A bat and ball cost $1.10. The bat costs $1 more than the ball. How much does th",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.677995751315189,
+      "mid_wide_14_17": 0.526077736386028,
+      "late_good_18_21": 0.8477089027735736
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8822497273217035,
+        "residual": 4.7115783475585,
+        "margin_gain": -0.625,
+        "score": 0.677995751315189
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9332239624056318,
+        "residual": 5.342724625538588,
+        "margin_gain": -1.125,
+        "score": 0.526077736386028
+      },
+      "late_good_18_21": {
+        "rho": 0.9470056989292326,
+        "residual": 5.819078062261717,
+        "margin_gain": -0.6875,
+        "score": 0.8477089027735736
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.07579578308243376,
+      0.29413362226127476,
+      0.21706527868058217,
+      0.41300531597570933
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 m",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.3144005355896422,
+      "mid_wide_14_17": 1.1645506447620684,
+      "late_good_18_21": 1.1422463854245561
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8728389560115438,
+        "residual": 4.754486111965527,
+        "margin_gain": 0.625,
+        "score": 1.3144005355896422
+      },
+      "mid_wide_14_17": {
+        "rho": 0.885243210069827,
+        "residual": 5.338118038915082,
+        "margin_gain": 0.125,
+        "score": 1.1645506447620684
+      },
+      "late_good_18_21": {
+        "rho": 0.9740862117676717,
+        "residual": 5.926136244774289,
+        "margin_gain": -0.125,
+        "score": 1.1422463854245561
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.02861512091053366,
+      0.39652391418387667,
+      0.2938403435843065,
+      0.2810206213212831
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "A farmer has 17 sheep. All but 9 die. How many are left?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.4476808003341614,
+      "mid_wide_14_17": 0.9181695277963293,
+      "late_good_18_21": 1.0188871899962508
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9675319710937005,
+        "residual": 4.625426958311357,
+        "margin_gain": -1.0,
+        "score": 0.4476808003341614
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9383757949461295,
+        "residual": 5.123411331400841,
+        "margin_gain": -0.25,
+        "score": 0.9181695277963293
+      },
+      "late_good_18_21": {
+        "rho": 0.9300642879744656,
+        "residual": 5.555807381942953,
+        "margin_gain": -0.25,
+        "score": 1.0188871899962508
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.05748691834035218,
+      0.14074067540235932,
+      0.36064585667402344,
+      0.441126549583265
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "If you overtake the person in 2nd place in a race, what place are you in?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.0445781374616097,
+      "mid_wide_14_17": 1.3658574294583676,
+      "late_good_18_21": 1.2109416203649273
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8302483567570591,
+        "residual": 4.591488222443637,
+        "margin_gain": 0.125,
+        "score": 1.0445781374616097
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8206762500724651,
+        "residual": 4.997801522400535,
+        "margin_gain": 0.625,
+        "score": 1.3658574294583676
+      },
+      "late_good_18_21": {
+        "rho": 0.9811616588900527,
+        "residual": 5.6552255901597155,
+        "margin_gain": 0.125,
+        "score": 1.2109416203649273
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.0280077856166232,
+      0.2262495976382725,
+      0.4301772737124785,
+      0.3155653430326259
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "How many times can you subtract 5 from 25?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.6170800191688676,
+      "mid_wide_14_17": 0.6137289188735717,
+      "late_good_18_21": 0.6131179232072207
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9388704553852611,
+        "residual": 4.49193077892223,
+        "margin_gain": -0.625,
+        "score": 0.6170800191688676
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9112994099726573,
+        "residual": 4.966843709326844,
+        "margin_gain": -0.8125,
+        "score": 0.6137289188735717
+      },
+      "late_good_18_21": {
+        "rho": 0.9204141149147581,
+        "residual": 5.38748578840824,
+        "margin_gain": -1.0,
+        "score": 0.6131179232072207
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.08883826609326546,
+      0.3052031193363407,
+      0.30316442630590623,
+      0.30279418826448756
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "Three siblings have ages that multiply to 36 and add to the house number next do",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.7217782764534438,
+      "mid_wide_14_17": 0.6331557889639843,
+      "late_good_18_21": 0.7487601608943343
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8895316929922371,
+        "residual": 4.628913921755575,
+        "margin_gain": -0.5,
+        "score": 0.7217782764534438
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8786680606153748,
+        "residual": 5.171281035742983,
+        "margin_gain": -0.875,
+        "score": 0.6331557889639843
+      },
+      "late_good_18_21": {
+        "rho": 0.9724755060631667,
+        "residual": 5.675039063566421,
+        "margin_gain": -0.8125,
+        "score": 0.7487601608943343
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.07544854430183984,
+      0.31957993949579805,
+      0.2676720318657756,
+      0.3372994843365866
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "You have two ropes that each take exactly 1 hour to burn. How do you measure 45 ",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.2005426887723136,
+      "mid_wide_14_17": 1.1193670243866851,
+      "late_good_18_21": 1.2677550677458365
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0540058265336045,
+        "residual": 4.925697183661974,
+        "margin_gain": 0.4375,
+        "score": 1.2005426887723136
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9094224521341823,
+        "residual": 5.304718800134698,
+        "margin_gain": 0.0625,
+        "score": 1.1193670243866851
+      },
+      "late_good_18_21": {
+        "rho": 0.9823866714148805,
+        "residual": 5.784880345851503,
+        "margin_gain": 0.1875,
+        "score": 1.2677550677458365
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.02937766667448721,
+      0.32418687567548804,
+      0.2756050320571127,
+      0.37083042559291224
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "A snail climbs 3 feet up a well each day and slides back 2 feet each night. The ",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.7910292745698099,
+      "mid_wide_14_17": 0.755133620943494,
+      "late_good_18_21": 0.80864328454751
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9542207658322776,
+        "residual": 4.9159525215974655,
+        "margin_gain": -0.4375,
+        "score": 0.7910292745698099
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8560213655951616,
+        "residual": 5.434700153110212,
+        "margin_gain": -0.75,
+        "score": 0.755133620943494
+      },
+      "late_good_18_21": {
+        "rho": 0.8957316775507072,
+        "residual": 5.85933893906361,
+        "margin_gain": -0.8125,
+        "score": 0.80864328454751
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.06479916069289476,
+      0.31524534230985346,
+      0.29340675625307866,
+      0.326548740744173
+    ]
+  },
+  {
+    "task": "reasoning",
+    "prompt": "If you have a 3-gallon and a 5-gallon jug, how do you measure exactly 4 gallons?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.9008246898073936,
+      "mid_wide_14_17": 0.799084183677053,
+      "late_good_18_21": 1.0163734664998694
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8917886924521621,
+        "residual": 4.746281487715211,
+        "margin_gain": -0.1875,
+        "score": 0.9008246898073936
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8108433091847497,
+        "residual": 5.1179358821623895,
+        "margin_gain": -0.5625,
+        "score": 0.799084183677053
+      },
+      "late_good_18_21": {
+        "rho": 0.9262964742649832,
+        "residual": 5.6938370438968215,
+        "margin_gain": -0.3125,
+        "score": 1.0163734664998694
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.05092004125042964,
+      0.30855680626822185,
+      0.2517470846378417,
+      0.3887760678435068
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Write exactly three sentences about the moon. Each sentence must start with a di",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8757997865784233,
+      "mid_wide_14_17": 2.31533162025241,
+      "late_good_18_21": 0.8848501610645418
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0803188910625974,
+        "residual": 4.7477022694860125,
+        "margin_gain": -0.125,
+        "score": 0.8757997865784233
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8624206062733656,
+        "residual": 4.964039010672097,
+        "margin_gain": 2.5625,
+        "score": 2.31533162025241
+      },
+      "late_good_18_21": {
+        "rho": 0.895143025088888,
+        "residual": 5.45824034295604,
+        "margin_gain": -0.5,
+        "score": 0.8848501610645418
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.008679426374806457,
+      0.05002660749534762,
+      0.8903535946121458,
+      0.050940371517700124
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "List five fruits in alphabetical order, separated by semicolons.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.0392518105451443,
+      "mid_wide_14_17": 0.7042774780999282,
+      "late_good_18_21": -0.028380316662746437
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0150256295929065,
+        "residual": 4.529522497115081,
+        "margin_gain": 0.25,
+        "score": 1.0392518105451443
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9427692502407246,
+        "residual": 4.998041265860728,
+        "margin_gain": -0.625,
+        "score": 0.7042774780999282
+      },
+      "late_good_18_21": {
+        "rho": 0.9415602325013378,
+        "residual": 5.336713765438274,
+        "margin_gain": -2.25,
+        "score": -0.028380316662746437
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.07128924577734984,
+      0.5697793077801493,
+      0.2915759269343499,
+      0.06735551950815087
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Respond with only a single word that means 'happy'.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.35372167980730124,
+      "mid_wide_14_17": -0.3103792262962193,
+      "late_good_18_21": -0.26960711825202754
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8821029382506711,
+        "residual": 4.339987806412513,
+        "margin_gain": -1.125,
+        "score": 0.35372167980730124
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9200202881281787,
+        "residual": 4.890634300711172,
+        "margin_gain": -2.625,
+        "score": -0.3103792262962193
+      },
+      "late_good_18_21": {
+        "rho": 0.9723124809205824,
+        "residual": 5.270458130120735,
+        "margin_gain": -2.6875,
+        "score": -0.26960711825202754
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.2409905305853782,
+      0.4889210380992129,
+      0.12954122729298662,
+      0.14054720402242224
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Write a haiku about programming. Remember: 5-7-5 syllable structure.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.9385912475075705,
+      "mid_wide_14_17": 0.6132807363290904,
+      "late_good_18_21": 0.8897625920283609
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0069399703851343,
+        "residual": 4.795341193115554,
+        "margin_gain": -0.0625,
+        "score": 0.9385912475075705
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8536779469751311,
+        "residual": 5.034420602108148,
+        "margin_gain": -0.875,
+        "score": 0.6132807363290904
+      },
+      "late_good_18_21": {
+        "rho": 0.8771044834158214,
+        "residual": 5.455744685265536,
+        "margin_gain": -0.5,
+        "score": 0.8897625920283609
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.05927122392974221,
+      0.387341379077591,
+      0.20208439320918098,
+      0.35130300378348595
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Name three countries that start with the letter B, one per line.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.6106821326836234,
+      "mid_wide_14_17": 1.1501570450213805,
+      "late_good_18_21": 2.240952059533305
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0584451121428518,
+        "residual": 4.6393033316323935,
+        "margin_gain": 1.375,
+        "score": 1.6106821326836234
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8679126522203361,
+        "residual": 4.927654203437407,
+        "margin_gain": 0.25,
+        "score": 1.1501570450213805
+      },
+      "late_good_18_21": {
+        "rho": 0.987462058621894,
+        "residual": 5.502228385599367,
+        "margin_gain": 2.25,
+        "score": 2.240952059533305
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.008035843315064487,
+      0.20139662334964142,
+      0.08017614597749805,
+      0.710391387357796
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Translate 'hello world' to French, Spanish, and German. Format as a numbered lis",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.4518167607073265,
+      "mid_wide_14_17": 1.4112535188358293,
+      "late_good_18_21": 0.6965875828603785
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.827021613734918,
+        "residual": 4.435341224139008,
+        "margin_gain": 1.0,
+        "score": 1.4518167607073265
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8608712025498488,
+        "residual": 4.972574398003919,
+        "margin_gain": 0.75,
+        "score": 1.4112535188358293
+      },
+      "late_good_18_21": {
+        "rho": 0.8693773229352663,
+        "residual": 5.415778898704792,
+        "margin_gain": -0.875,
+        "score": 0.6965875828603785
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.024945815570569692,
+      0.4550192004921425,
+      0.41956276495483774,
+      0.1004722189824501
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Write the alphabet backwards, with a comma between each letter.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.7592437749585879,
+      "mid_wide_14_17": 1.0005167968876998,
+      "late_good_18_21": 1.7159962338526822
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9328949302922076,
+        "residual": 4.412536270231251,
+        "margin_gain": -0.3125,
+        "score": 0.7592437749585879
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8928707070669825,
+        "residual": 4.841890045038973,
+        "margin_gain": 0.0,
+        "score": 1.0005167968876998
+      },
+      "late_good_18_21": {
+        "rho": 0.9642429695162993,
+        "residual": 5.34262062353786,
+        "margin_gain": 1.25,
+        "score": 1.7159962338526822
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.022778920158728275,
+      0.103992949520557,
+      0.16848877790934053,
+      0.7047393524113741
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Give exactly two reasons why the sky is blue. Number them.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8061339939443871,
+      "mid_wide_14_17": 1.3174704025750805,
+      "late_good_18_21": 0.8871717352549034
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8335039004814048,
+        "residual": 4.341650820444043,
+        "margin_gain": -0.25,
+        "score": 0.8061339939443871
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9152493486106701,
+        "residual": 4.897726035791407,
+        "margin_gain": 0.625,
+        "score": 1.3174704025750805
+      },
+      "late_good_18_21": {
+        "rho": 0.9047592811504723,
+        "residual": 5.328022598000226,
+        "margin_gain": -0.4375,
+        "score": 0.8871717352549034
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.03868013143793991,
+      0.19394877087824297,
+      0.5392972341917331,
+      0.22807386349208406
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "Write a sentence that contains exactly 10 words.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8016593789026526,
+      "mid_wide_14_17": 0.7897171813065587,
+      "late_good_18_21": 1.742357906473197
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9528903508012823,
+        "residual": 4.498357420715187,
+        "margin_gain": -0.25,
+        "score": 0.8016593789026526
+      },
+      "mid_wide_14_17": {
+        "rho": 0.89527708829334,
+        "residual": 4.885251538972803,
+        "margin_gain": -0.4375,
+        "score": 0.7897171813065587
+      },
+      "late_good_18_21": {
+        "rho": 0.9473963215504935,
+        "residual": 5.292909014691726,
+        "margin_gain": 1.3125,
+        "score": 1.742357906473197
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.02302297900881176,
+      0.11441263999609193,
+      0.1117123391809026,
+      0.7508520418141937
+    ]
+  },
+  {
+    "task": "instruction",
+    "prompt": "List the planets in order from the sun, comma-separated.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8910901909356655,
+      "mid_wide_14_17": 0.9174581116723363,
+      "late_good_18_21": 0.9936993359636707
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.1547668846842387,
+        "residual": 4.779576281704686,
+        "margin_gain": -0.0625,
+        "score": 0.8910901909356655
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9092840739853061,
+        "residual": 4.91996666933964,
+        "margin_gain": -0.1875,
+        "score": 0.9174581116723363
+      },
+      "late_good_18_21": {
+        "rho": 0.9464971419645571,
+        "residual": 5.298267392765188,
+        "margin_gain": -0.1875,
+        "score": 0.9936993359636707
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.04877112003736238,
+      0.2898370060976236,
+      0.30553201193494517,
+      0.3558598619300689
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "What is the speed of light in meters per second?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8469632340782015,
+      "mid_wide_14_17": 0.6938951693662228,
+      "late_good_18_21": 1.083480139465008
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9803068240760011,
+        "residual": 4.453501406505009,
+        "margin_gain": -0.125,
+        "score": 0.8469632340782015
+      },
+      "mid_wide_14_17": {
+        "rho": 0.7988806334050207,
+        "residual": 4.730296796938645,
+        "margin_gain": -0.625,
+        "score": 0.6938951693662228
+      },
+      "late_good_18_21": {
+        "rho": 0.9006334619424581,
+        "residual": 5.209625890238727,
+        "margin_gain": 0.0,
+        "score": 1.083480139465008
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.05214174277041869,
+      0.2836928959896398,
+      0.2088792160986765,
+      0.455286145141265
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "Who wrote the novel '1984'?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.1616117273570659,
+      "mid_wide_14_17": 0.9885017719968485,
+      "late_good_18_21": 0.8742822688658366
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9729089001106003,
+        "residual": 4.4531469869512295,
+        "margin_gain": 0.5,
+        "score": 1.1616117273570659
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9036540470807649,
+        "residual": 4.7979899306053895,
+        "margin_gain": 0.0,
+        "score": 0.9885017719968485
+      },
+      "late_good_18_21": {
+        "rho": 0.8159134412986384,
+        "residual": 4.97405650627714,
+        "margin_gain": -0.375,
+        "score": 0.8742822688658366
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.0413634227136427,
+      0.42225966119085323,
+      0.2986882911136845,
+      0.23768862498181945
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "What is the chemical formula for sulfuric acid?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8457619699926995,
+      "mid_wide_14_17": 0.994888044308195,
+      "late_good_18_21": 1.1366540093490287
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8876478030943753,
+        "residual": 4.30850655460506,
+        "margin_gain": -0.125,
+        "score": 0.8457619699926995
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8012632216914105,
+        "residual": 4.67633505407809,
+        "margin_gain": 0.0,
+        "score": 0.994888044308195
+      },
+      "late_good_18_21": {
+        "rho": 0.8853044586010419,
+        "residual": 5.140001734646707,
+        "margin_gain": 0.125,
+        "score": 1.1366540093490287
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.04263825871402121,
+      0.23142963667933936,
+      0.3118517862054496,
+      0.41408031840118986
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "In what year did the Berlin Wall fall?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.2167417857004736,
+      "mid_wide_14_17": 0.4139908533732225,
+      "late_good_18_21": 0.6801719474406479
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8711469494928816,
+        "residual": 4.26365435274169,
+        "margin_gain": 0.625,
+        "score": 1.2167417857004736
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9091868750353471,
+        "residual": 4.7462345794191325,
+        "margin_gain": -1.125,
+        "score": 0.4139908533732225
+      },
+      "late_good_18_21": {
+        "rho": 0.9134214407634309,
+        "residual": 5.0872668983483855,
+        "margin_gain": -0.75,
+        "score": 0.6801719474406479
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.05380756077507276,
+      0.6133265876926522,
+      0.12314908553166592,
+      0.2097167660006091
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "What is the capital of Australia?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.5650385205996232,
+      "mid_wide_14_17": 1.2916560633597047,
+      "late_good_18_21": 1.0133618995224707
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9962529349613755,
+        "residual": 4.3177970054401795,
+        "margin_gain": -0.625,
+        "score": 0.5650385205996232
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8069592122411304,
+        "residual": 4.606219135160218,
+        "margin_gain": 0.625,
+        "score": 1.2916560633597047
+      },
+      "late_good_18_21": {
+        "rho": 0.9076552772916489,
+        "residual": 5.025817413549826,
+        "margin_gain": -0.0625,
+        "score": 1.0133618995224707
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.04011875452464726,
+      0.12420345163541073,
+      0.531209268148493,
+      0.30446852569144905
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "What is the atomic number of gold?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.0259893219742358,
+      "mid_wide_14_17": 0.5454587486714066,
+      "late_good_18_21": 1.1806586085450124
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8433463373690133,
+        "residual": 4.205691115924698,
+        "margin_gain": 0.25,
+        "score": 1.0259893219742358
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8082666480129431,
+        "residual": 4.627193715376448,
+        "margin_gain": -0.875,
+        "score": 0.5454587486714066
+      },
+      "late_good_18_21": {
+        "rho": 0.9158253712035114,
+        "residual": 5.093306099530329,
+        "margin_gain": 0.25,
+        "score": 1.1806586085450124
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.04471231758306638,
+      0.34800876587403073,
+      0.13310875783470144,
+      0.47417015870820145
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "Who painted the Sistine Chapel ceiling?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.1590804243853228,
+      "mid_wide_14_17": 0.9181577361821677,
+      "late_good_18_21": 0.9242694869311594
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8801746271434365,
+        "residual": 4.301389062641768,
+        "margin_gain": 0.5,
+        "score": 1.1590804243853228
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8915496366018892,
+        "residual": 4.740613135813672,
+        "margin_gain": -0.125,
+        "score": 0.9181577361821677
+      },
+      "late_good_18_21": {
+        "rho": 0.7998306591428963,
+        "residual": 4.887368423370141,
+        "margin_gain": -0.25,
+        "score": 0.9242694869311594
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.042050566392464635,
+      0.42710663152692996,
+      0.2637992317915441,
+      0.26704357028906134
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "What is the largest organ in the human body?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.6595997504874577,
+      "mid_wide_14_17": 1.4370593877361708,
+      "late_good_18_21": 1.0837509166038863
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9160986521973187,
+        "residual": 4.357871730733266,
+        "margin_gain": -0.5,
+        "score": 0.6595997504874577
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8112368367926331,
+        "residual": 4.714652193869803,
+        "margin_gain": 0.875,
+        "score": 1.4370593877361708
+      },
+      "late_good_18_21": {
+        "rho": 0.9162685173453465,
+        "residual": 5.234432359037452,
+        "margin_gain": 0.0,
+        "score": 1.0837509166038863
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.03206498306123547,
+      0.1199366954072965,
+      0.5678647872745676,
+      0.2801335342569005
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "What is the boiling point of water in Fahrenheit?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.9080219279196395,
+      "mid_wide_14_17": 1.0573664761007955,
+      "late_good_18_21": 1.0755836974967232
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8866001369974562,
+        "residual": 4.305734845094382,
+        "margin_gain": 0.0,
+        "score": 0.9080219279196395
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8084938510739125,
+        "residual": 4.687073157114846,
+        "margin_gain": 0.125,
+        "score": 1.0573664761007955
+      },
+      "late_good_18_21": {
+        "rho": 0.9155130232640949,
+        "residual": 5.1924630223797585,
+        "margin_gain": 0.0,
+        "score": 1.0755836974967232
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.04161508400954193,
+      0.2558283095769156,
+      0.3448796963991543,
+      0.35767691001438806
+    ]
+  },
+  {
+    "task": "knowledge",
+    "prompt": "Who developed the theory of general relativity?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.9052912260075868,
+      "mid_wide_14_17": 1.0975451933668692,
+      "late_good_18_21": 1.5559161584760235
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.8559377661489994,
+        "residual": 4.246087779261433,
+        "margin_gain": 0.0,
+        "score": 0.9052912260075868
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9244347303187549,
+        "residual": 4.749378062312478,
+        "margin_gain": 0.25,
+        "score": 1.0975451933668692
+      },
+      "late_good_18_21": {
+        "rho": 0.8460234801768765,
+        "residual": 4.989891012645432,
+        "margin_gain": 1.0,
+        "score": 1.5559161584760235
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.025935637996706593,
+      0.15857068552321005,
+      0.23292310882729444,
+      0.582570567652789
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Write a Python function that checks if a number is prime.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.2197318797443193,
+      "mid_wide_14_17": 1.0702205785500767,
+      "late_good_18_21": 1.038188169248431
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9855210065940562,
+        "residual": 4.45016590861268,
+        "margin_gain": 0.625,
+        "score": 1.2197318797443193
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9146741953838293,
+        "residual": 4.910614185826128,
+        "margin_gain": 0.125,
+        "score": 1.0702205785500767
+      },
+      "late_good_18_21": {
+        "rho": 0.9334362833507779,
+        "residual": 5.344870271268321,
+        "margin_gain": -0.125,
+        "score": 1.038188169248431
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.03454757219604551,
+      0.396153213000479,
+      0.29376450282396316,
+      0.27553471197951235
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Implement binary search in Python.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.491660018468492,
+      "mid_wide_14_17": 0.588506912617353,
+      "late_good_18_21": 0.5815743506558072
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9987300703069234,
+        "residual": 4.267120197802845,
+        "margin_gain": -0.75,
+        "score": 0.491660018468492
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9413110159480109,
+        "residual": 4.7295010870087815,
+        "margin_gain": -0.75,
+        "score": 0.588506912617353
+      },
+      "late_good_18_21": {
+        "rho": 0.9008725440498098,
+        "residual": 4.887955569353751,
+        "margin_gain": -0.875,
+        "score": 0.5815743506558072
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.09883394860242474,
+      0.264214478535227,
+      0.32068360418442754,
+      0.3162679686779208
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Write a function to reverse a linked list.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.6505876494523024,
+      "mid_wide_14_17": 1.3028870955029737,
+      "late_good_18_21": 1.1906933303782594
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9572835752373188,
+        "residual": 4.37458861011749,
+        "margin_gain": 1.5,
+        "score": 1.6505876494523024
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9350607527472726,
+        "residual": 4.854526606635777,
+        "margin_gain": 0.625,
+        "score": 1.3028870955029737
+      },
+      "late_good_18_21": {
+        "rho": 0.9503841104601592,
+        "residual": 5.195317817581536,
+        "margin_gain": 0.25,
+        "score": 1.1906933303782594
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.019045397370499574,
+      0.5169782290348073,
+      0.25790715492911837,
+      0.2060692186655748
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Write Python code to flatten a nested list.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.161062793165812,
+      "mid_wide_14_17": 1.6885890102496965,
+      "late_good_18_21": 1.6895735508891556
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9504594021444055,
+        "residual": 4.416728069045668,
+        "margin_gain": 0.5,
+        "score": 1.161062793165812
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9084495626442997,
+        "residual": 4.868119395214931,
+        "margin_gain": 1.375,
+        "score": 1.6885890102496965
+      },
+      "late_good_18_21": {
+        "rho": 0.9666223318182898,
+        "residual": 5.2140762521732125,
+        "margin_gain": 1.25,
+        "score": 1.6895735508891556
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.014320274768115676,
+      0.14602851858357915,
+      0.41941226808974597,
+      0.42023893855855926
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Implement a stack using two queues.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.8374534294357528,
+      "mid_wide_14_17": 1.4298614391919735,
+      "late_good_18_21": 1.7954809331026857
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9087125929953925,
+        "residual": 4.298561036671853,
+        "margin_gain": -0.125,
+        "score": 0.8374534294357528
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8994137891248406,
+        "residual": 4.810927879647128,
+        "margin_gain": 0.875,
+        "score": 1.4298614391919735
+      },
+      "late_good_18_21": {
+        "rho": 0.9197215260543098,
+        "residual": 5.048261954594894,
+        "margin_gain": 1.5,
+        "score": 1.7954809331026857
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.0166489267973306,
+      0.0888769311396719,
+      0.290635131298574,
+      0.6038390107644235
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Write a function to check if a string is a valid palindrome.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.7362659308406683,
+      "mid_wide_14_17": 1.7091782439950238,
+      "late_good_18_21": 1.4200638476326721
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 1.0447187787438268,
+        "residual": 4.621632822319081,
+        "margin_gain": -0.375,
+        "score": 0.7362659308406683
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9156516141479308,
+        "residual": 4.981868641197015,
+        "margin_gain": 1.375,
+        "score": 1.7091782439950238
+      },
+      "late_good_18_21": {
+        "rho": 0.9802607985304749,
+        "residual": 5.449485435959073,
+        "margin_gain": 0.625,
+        "score": 1.4200638476326721
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.018868840515353445,
+      0.08227306478454297,
+      0.575862202068587,
+      0.3229958926315167
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "How do you detect a cycle in a linked list?",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.3502666093754976,
+      "mid_wide_14_17": 0.8732904592642942,
+      "late_good_18_21": 0.8099600789755022
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9803742579523399,
+        "residual": 4.470119433805998,
+        "margin_gain": 0.875,
+        "score": 1.3502666093754976
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8998746728201792,
+        "residual": 4.841264305551739,
+        "margin_gain": -0.25,
+        "score": 0.8732904592642942
+      },
+      "late_good_18_21": {
+        "rho": 0.8640289056492798,
+        "residual": 5.1933687533514306,
+        "margin_gain": -0.5625,
+        "score": 0.8099600789755022
+      }
+    },
+    "best_block": "mid_good_10_11",
+    "best_idx": 1,
+    "score_probs": [
+      0.03748784124825976,
+      0.5581065342608993,
+      0.2149913007218458,
+      0.18941432376899528
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Write Python code to find the two numbers in a list that sum to a target.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.139961962428425,
+      "mid_wide_14_17": 1.8607768628032464,
+      "late_good_18_21": 1.379265125773613
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9329748998973414,
+        "residual": 4.597497161988136,
+        "margin_gain": 0.375,
+        "score": 1.139961962428425
+      },
+      "mid_wide_14_17": {
+        "rho": 0.8987000341175579,
+        "residual": 5.089434365192568,
+        "margin_gain": 1.625,
+        "score": 1.8607768628032464
+      },
+      "late_good_18_21": {
+        "rho": 0.9962815293070103,
+        "residual": 5.582022922828581,
+        "margin_gain": 0.5,
+        "score": 1.379265125773613
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.014731634034919935,
+      0.1440155214513905,
+      0.6088371840985964,
+      0.23241566041509315
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Implement merge sort in Python.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 1.3110781575733848,
+      "mid_wide_14_17": 1.0311731472664984,
+      "late_good_18_21": 1.6502973896654423
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9545733895458673,
+        "residual": 4.235475872185725,
+        "margin_gain": 0.875,
+        "score": 1.3110781575733848
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9321827794003901,
+        "residual": 4.741639905433077,
+        "margin_gain": 0.125,
+        "score": 1.0311731472664984
+      },
+      "late_good_18_21": {
+        "rho": 0.8655961023273578,
+        "residual": 4.866156101818249,
+        "margin_gain": 1.25,
+        "score": 1.6502973896654423
+      }
+    },
+    "best_block": "late_good_18_21",
+    "best_idx": 3,
+    "score_probs": [
+      0.02009705098055809,
+      0.27664342485969967,
+      0.15805125536249967,
+      0.5452082687972426
+    ]
+  },
+  {
+    "task": "coding",
+    "prompt": "Write a Python function to compute Fibonacci numbers with memoization.",
+    "scores": {
+      "no_dup": 0.0,
+      "mid_good_10_11": 0.5442776778168271,
+      "mid_wide_14_17": 1.447341694109844,
+      "late_good_18_21": 0.8518351005411384
+    },
+    "details": {
+      "no_dup": {
+        "rho": 1.0,
+        "residual": 0.0,
+        "margin_gain": 0.0,
+        "score": 0.0
+      },
+      "mid_good_10_11": {
+        "rho": 0.9435242798507929,
+        "residual": 4.447399808860325,
+        "margin_gain": -0.75,
+        "score": 0.5442776778168271
+      },
+      "mid_wide_14_17": {
+        "rho": 0.9134467762328574,
+        "residual": 4.919378634898505,
+        "margin_gain": 0.875,
+        "score": 1.447341694109844
+      },
+      "late_good_18_21": {
+        "rho": 0.8992539884191525,
+        "residual": 5.299331485334421,
+        "margin_gain": -0.5,
+        "score": 0.8518351005411384
+      }
+    },
+    "best_block": "mid_wide_14_17",
+    "best_idx": 2,
+    "score_probs": [
+      0.036308405209912846,
+      0.10783525206242342,
+      0.65637524890513,
+      0.19948109382253368
+    ]
+  }
+]

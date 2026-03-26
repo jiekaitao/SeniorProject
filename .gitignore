@@ -63,3 +63,23 @@ Thumbs.db
 # Logs
 *.log
 logs_*.txt
+
+# DeepPass — model weights (52GB+), virtual envs (9GB), Optuna DBs
+DeepPass/models/
+DeepPass/envs/
+*.db
+
+# DeepPass — sbatch logs (tracked via results/data/ JSONs instead)
+DeepPass/results/sbatch_*.log
+
+# DeepPass — lm-eval output dirs (large, auto-generated)
+DeepPass/results/lm_eval_*/
+DeepPass/results/corrected_pipeline/
+
+# DeepPass — export zip (redundant with tracked files)
+DeepPass/deeppass_export/
+DeepPass/deeppass_export.zip
+
+# HuggingFace cache
+.cache/
+hf_cache/

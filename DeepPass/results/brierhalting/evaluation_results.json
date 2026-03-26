@@ -1,0 +1,36 @@
+{
+  "systems": {
+    "1_pass_baseline": 0.5343899465628633,
+    "2_pass_fixed": 0.7914545417560247,
+    "3_pass_fixed": 0.7327545912940405,
+    "brierhalting": 0.5343899465628633
+  },
+  "baseline": 0.5343899465628633,
+  "block": [
+    10,
+    11
+  ],
+  "halt_threshold": 0.5,
+  "halt_decisions": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "pass_distribution": {
+    "1": 16
+  },
+  "avg_passes": 1.0
+}

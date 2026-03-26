@@ -1,0 +1,8 @@
+{
+  "model_path": "/blue/cis4914/jietao/DeepPass/models/full/calme-2.1-qwen2-72b",
+  "i": 45,
+  "j": 52,
+  "tag": "calme72b",
+  "timestamp": "20260314_002229",
+  "config": "dup_45_52"
+}

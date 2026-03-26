@@ -1,0 +1,101 @@
+[
+  {
+    "tag": "7B_good_10_11",
+    "config": [
+      10,
+      11
+    ],
+    "model": "/blue/cis4914/jietao/DeepPass/models/small/Qwen2-7B-Instruct",
+    "baseline": 0.5343899465628633,
+    "pre_ft": 0.7914545417560247,
+    "pre_delta": 0.2570645951931614,
+    "post_ft": 0.6544463618024431,
+    "post_delta": 0.12005641523957977,
+    "ft_gain": -0.1370081799535816,
+    "is_good_config": true,
+    "junction_layers": [
+      10,
+      11,
+      12
+    ],
+    "trainable": 699173376,
+    "trainable_pct": 8.908171608594754,
+    "steps": 200,
+    "final_loss": 3.6184986432393394e-05
+  },
+  {
+    "tag": "7B_good_18_21",
+    "config": [
+      18,
+      21
+    ],
+    "model": "/blue/cis4914/jietao/DeepPass/models/small/Qwen2-7B-Instruct",
+    "baseline": 0.5343899465628633,
+    "pre_ft": 0.7692787173218587,
+    "pre_delta": 0.2348887707589954,
+    "post_ft": 0.7937058017654665,
+    "post_delta": 0.25931585520260314,
+    "ft_gain": 0.02442708444360775,
+    "is_good_config": true,
+    "junction_layers": [
+      24,
+      20,
+      21,
+      23
+    ],
+    "trainable": 932231168,
+    "trainable_pct": 11.2117224915738,
+    "steps": 200,
+    "final_loss": 0.0008074442545572916
+  },
+  {
+    "tag": "7B_bad_4_9",
+    "config": [
+      4,
+      9
+    ],
+    "model": "/blue/cis4914/jietao/DeepPass/models/small/Qwen2-7B-Instruct",
+    "baseline": 0.5343899465628633,
+    "pre_ft": 0.27378283939065245,
+    "pre_delta": -0.26060710717221086,
+    "post_ft": 0.53896128668357,
+    "post_delta": 0.004571340120706702,
+    "ft_gain": 0.26517844729291756,
+    "is_good_config": false,
+    "junction_layers": [
+      8,
+      9,
+      13,
+      14
+    ],
+    "trainable": 932231168,
+    "trainable_pct": 10.616572185780159,
+    "steps": 200,
+    "final_loss": 14.44287109375
+  },
+  {
+    "tag": "7B_bad_15_18",
+    "config": [
+      15,
+      18
+    ],
+    "model": "/blue/cis4914/jietao/DeepPass/models/small/Qwen2-7B-Instruct",
+    "baseline": 0.5343899465628633,
+    "pre_ft": 0.3901254876044844,
+    "pre_delta": -0.14426445895837892,
+    "post_ft": 0.4905070292576778,
+    "post_delta": -0.04388291730518551,
+    "ft_gain": 0.1003815416531934,
+    "is_good_config": false,
+    "junction_layers": [
+      17,
+      18,
+      20,
+      21
+    ],
+    "trainable": 932231168,
+    "trainable_pct": 11.2117224915738,
+    "steps": 200,
+    "final_loss": 0.0462190310160319
+  }
+]
