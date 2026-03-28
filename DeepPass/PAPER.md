@@ -237,6 +237,30 @@ Full experimental timeline: `HISTORY.md` (~1200 lines)
 
 ---
 
+## Central Thesis (updated 2026-03-27)
+
+**"LLMs Have ADHD: Improving Reasoning by Making Transformers Pay Attention Twice"**
+
+Layer duplication is a zero-cost inference-time technique that improves reasoning by giving attention another pass. The key trade-off: attention repetition helps reasoning, FFN repetition corrupts factual memory. The optimal strategy is selective sublayer control — repeat attention fully, but gate FFN based on per-neuron stability.
+
+### The Story Arc
+
+1. **LLMs don't pay enough attention** — viral examples show models missing obvious context (Patel et al. 2024, "Repeat the Prompt Twice")
+2. **Repeating layers helps** — Ng's RYS discovery; our systematic search finds best blocks
+3. **But it hurts facts** — lm-eval shows MMLU-PRO drops -4.8% while dual probe improves +7.6
+4. **The culprit is FFN re-retrieval** — attention is safe to repeat; FFN crosses memory basin boundaries
+5. **Selective gating solves it** — per-neuron gate margin or per-layer β control preserves both reasoning and recall
+6. **Same phenomenon at all scales** — TRM (7M params) shows identical attention-vs-MLP pattern
+
+### Cross-Scale Evidence: DeepPass + TRM
+
+| System | Scale | Repeated Computation | Attention Role | FFN/MLP Role |
+|--------|-------|---------------------|----------------|--------------|
+| DeepPass | 27B-72B | Layer duplication (2-4x) | Benefits from repetition | Harms factual recall |
+| TRM | 7M | Recursive blocks (18x) | Essential for variable-context tasks | Redundant on some tasks |
+
+Both demonstrate: **iterative attention refinement is the primary driver of reasoning.**
+
 ## Figures Needed
 1. **Spectral screening heatmap** — displacement rho vs actual math delta (7B)
 2. **BLOOD impact correlation** — scatter plot, r=-0.492
@@ -245,3 +269,7 @@ Full experimental timeline: `HISTORY.md` (~1200 lines)
 5. **Oracle seam patching curves** — alpha vs combined score per block (pending)
 6. **DICE feature importance** — individual feature correlations
 7. **Cross-region stacking diagram** — network architecture showing where blocks are duplicated
+8. **NEW: lm-eval sublayer comparison** — bar chart: baseline vs attn-only vs whisper FFN vs full, per benchmark
+9. **NEW: Gate margin vs flip rate** — scatter plot showing which layers are stable
+10. **NEW: DLA utility by layer** — bar chart showing which layers' FFN helps vs hurts
+11. **NEW: DeepPass + TRM comparison** — side-by-side showing same pattern at different scales

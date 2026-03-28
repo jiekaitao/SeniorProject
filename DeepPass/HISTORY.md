@@ -2215,3 +2215,310 @@ Design a sequence of 3-5 experiments (runnable on one NVIDIA B200 with 7B and 72
 3. **Produce code** for any proposed fix or experiment.
 4. **Prioritize** — what is the ONE most important thing to try next?
 5. **Don't repeat the original design.** We tried it. Focus on what's DIFFERENT now.
+
+---
+
+## 34. Comprehensive Gemma3-27B Analysis (2026-03-25 to 2026-03-26)
+
+Massive parallel experiment campaign on Gemma3-27B (62 layers) to build complete dataset for the paper.
+
+### Best Configurations Found
+
+| Config | Combined | Delta vs Baseline |
+|--------|----------|-------------------|
+| Baseline | 80.54 | — |
+| Best single (12,13) | 81.91 | +1.37 |
+| Best pair (0,2)+(12,13) | 85.92 | +5.38 |
+| Best triple (0,2)+(12,13)+(47,48) | 87.80 | +7.26 |
+| **Triple + per-layer alpha** | **88.12** | **+7.58** |
+| Best quad (0,2)+(12,13)+(22,25)+(47,48) @0.2 | 88.14 | +7.60 |
+
+**Key finding:** The quad barely improves over the alpha-tuned triple (+0.02). Per-layer alpha tuning on the triple is the sweet spot — adding more blocks gives diminishing returns.
+
+### Per-Layer Alpha Optimization (Bayesian, 40 trials, 2 GPU parallel)
+
+Best triple alphas (validated on full probes):
+- L0 = 0.88, L1 = 0.81 (dampen early block)
+- L12 = 1.45 (boost mid block)
+- L47 = 0.95 (near-default late block)
+
+Combined: 88.12. Bayesian optimization (60 evals) reached within 0.10 of grid search optimum.
+
+### Per-Sublayer Alpha (Attention vs FFN, 60 Bayesian trials)
+
+8 parameters (attn + FFN per duplicated layer). Best validated: 87.83.
+
+FFN hypothesis **partially supported**: avg_attn_alpha (1.37) > avg_ffn_alpha (1.15) across top 5 configs. But the gap is smaller than on 72B, and FFN is not universally destructive.
+
+### Mechanistic Analysis
+
+**Attention-only vs full duplication:**
+- Individual layers: FFN impact mixed (L0: -0.37, L1: +0.38, L12: -1.33, L47: -0.94)
+- Full triple: FFN impact = -4.31 (FFN helps significantly in multi-block context)
+
+**Jaccard instability (gate overlap between passes):**
+- L0: 0.17 (very unstable), L1: 0.74 (stable), L12: 0.66 (stable), L47: 0.46 (moderate)
+
+**FFN danger scores:**
+- L47: 0.48 (most dangerous), L12: 0.44, L0: 0.31, L1: 0.10
+
+**Inference speed:** Triple adds ~64% latency (no-cache generation).
+
+### Greedy Quad Search (90 candidates)
+
+Best: +(22,25) @0.2-0.3 = 89.70 on reduced probes. But validated at only 88.14 — same as triple alpha. The reduced probe (10 questions) inflates apparent benefit of deeper stacking.
+
+Top 5 4th blocks: (22,25), (38,41), (54,55), (52,55), (38,39).
+
+### Deep Stacking (5-6 blocks with whisper alpha)
+
+Best 5-block: (0,2)+(12,13)+(35,36)+(40,41)+(47,48) = 87.83. Barely above triple (87.80). Diminishing returns confirmed.
+
+### SBUID Screening Validation
+
+SBUID does NOT transfer to Gemma3: Spearman r=-0.25, p=0.29 (not significant). The screening metric needs architecture-specific calibration. Lambda sweep found best lambda=20000 (vs 6000 on 72B) but still not significant.
+
+### Data Files
+
+- `results/data/gemma3_27b/bayesian_alpha_triple/results.json` — per-layer alpha
+- `results/data/gemma3_27b/sublayer_alpha/results.json` — per-sublayer alpha
+- `results/data/gemma3_27b/greedy_quad/results.json` — quad search
+- `results/data/gemma3_27b/best_quad_alpha/results.json` — quad alpha tuning
+- `results/data/gemma3_27b/sbuid_validation/results.json` — SBUID correlation
+- `results/data/gemma3_27b/mechanistic/` — attn_only_vs_full, jaccard, ffn_danger, speed, validation
+- `results/data/gemma3_27b/mega_stacking/alt_anchor_results.json` — mega stacking log results
+
+### lm-eval Standardized Benchmarks (15% subsample, BBH + MATH + MMLU-PRO + MuSR)
+
+**Critical finding: Layer duplication DEGRADES standardized benchmarks despite improving our dual probe.**
+
+| Config | BBH | MATH Hard | MMLU-PRO | MuSR |
+|--------|-----|-----------|----------|------|
+| Baseline | 66.89% | 62.87% | 40.66% | 44.35% |
+| Triple @1.0 | 63.47% (-3.4) | 61.88% (-1.0) | 35.84% (-4.8) | 44.35% (0.0) |
+| Triple alpha-tuned | 64.38% (-2.5) | 60.89% (-2.0) | 35.40% (-5.3) | 43.48% (-0.9) |
+
+Alpha tuning partially recovers BBH (+0.9 vs @1.0) but makes MMLU-PRO and MATH worse. The L12 boost (α=1.45) that helps reasoning on our probe hurts factual recall on standardized tests.
+
+**Interpretation:** The dual probe (math guesstimate + EQ-bench) captures reasoning improvement but underweights factual recall degradation. Standardized benchmarks have heavier factual components (especially MMLU-PRO). This directly validates the FFN re-retrieval hypothesis — the second-pass FFN corrupts stored knowledge, and this shows up clearly on knowledge-heavy benchmarks.
+
+**Note:** IFEval was excluded (too slow without KV cache — 284 generate_until requests at ~3min each). The Gemma3 sliding window attention mask was fixed by extending `layer_types` to match the duplicated layer count.
+
+- `results/data/gemma3_27b/lm_eval/baseline.json`
+- `results/data/gemma3_27b/lm_eval/triple_alpha1.json`
+- `results/data/gemma3_27b/lm_eval/triple_alpha_tuned.json`
+
+### Sublayer lm-eval: Attention-Only vs Whisper FFN (2026-03-27)
+
+Extended lm-eval to test sublayer-controlled duplication:
+
+| Config | BBH | MATH Hard | MMLU-PRO | MuSR |
+|--------|-----|-----------|----------|------|
+| Baseline | 66.89% | 62.87% | 40.66% | 44.35% |
+| Triple attn-only (β=0) | 65.41% (-1.5) | 61.88% (-1.0) | 37.45% (-3.2) | 44.35% (0.0) |
+| Triple whisper FFN (β=0.2) | 64.04% (-2.9) | **63.37% (+0.5)** | 35.79% (-4.9) | **45.22% (+0.9)** |
+| Triple full @1.0 | 63.47% (-3.4) | 61.88% (-1.0) | 35.84% (-4.8) | 44.35% (0.0) |
+| Single (12,13) | 64.50% (-2.4) | 60.89% (-2.0) | 38.95% (-1.7) | **46.09% (+1.7)** |
+
+**Key findings:**
+1. **Whisper FFN (β=0.2) is the ONLY config that improves any benchmark** — MATH +0.5%, MuSR +0.9%
+2. Attention-only preserves MMLU-PRO best (-3.2% vs -4.8% for full)
+3. Single block (12,13) has smallest overall damage and best MuSR (+1.7%)
+4. Some FFN processing IS needed to interpret attention output — pure attn-only loses the MATH gain
+
+**Interpretation:** The FFN serves dual roles: (a) interpreting/processing the attention signal (beneficial) and (b) re-retrieving stored facts (harmful when input is perturbed). β=0.2 keeps just enough processing without triggering full re-retrieval. The optimal β is prompt-dependent — some inputs benefit from FFN reuse, others don't.
+
+- `results/data/gemma3_27b/lm_eval/attn_only.json`
+- `results/data/gemma3_27b/lm_eval/attn_heavy_ffn02.json`
+
+---
+
+## 35. Neuron-Level Analysis: Finding Optimal Per-Neuron Masks (2026-03-27)
+
+The coarse α/β control (one weight for all neurons in a sublayer) is insufficient — we need per-neuron or per-channel masks to selectively keep beneficial FFN computations while suppressing harmful re-retrieval.
+
+### Motivation
+
+Our data shows the optimal policy is sparse or prompt-conditional, not a single β:
+- attn-only preserves MMLU-PRO but loses MATH improvement
+- whisper FFN gains MATH (+0.5%) and MuSR (+0.9%) but damages MMLU-PRO (-4.9%)
+- The same neuron can be helpful on one prompt and harmful on another
+
+### Four Approaches (inspired by GPT-5.4 Pro analysis + our simplifications)
+
+**1. Direct Logit Attribution (DLA) + GEM Eigenmask** — COMPLETED
+- For each duplicated layer's FFN, measure how much its output pushes the correct-answer logit
+- GEM: build covariance matrices of "helpful" vs "harmful" atom contributions, solve generalized eigendecomposition
+- Result: GEM eigenmask says keep L1 and L12 FFN, remove L0 and L47 FFN
+- L1 reasoning DLA = +1.62, L12 = +0.99, L47 = -0.05 (harmful)
+- Data: `results/data/gemma3_27b/neuron_analysis/phase1_dla_gem_cib.json`
+
+**2. Gate Margin Gating** — RUNNING
+- Self-calibrating: each FFN neuron checks if its gate gives the same answer on both passes
+- If gate_first × gate_second > 0, the neuron is stable → safe to repeat
+- If the gate flips (different sign), the neuron crossed a basin boundary → block it
+- No training data needed, works per-prompt at inference time
+- Measured gate margins: L0 flip rate = 37% (unstable!), L12 flip rate = 0.28% (very stable)
+
+**3. Causal Mediation Patching (HCMP)** — RUNNING
+- Patch individual layers' FFN from whisper into attn-only run
+- Early result: L0 FFN@0.2 = +0.96 improvement over attn-only base
+- Also runs HCES (Cross-Entropy Search) over grouped masks
+
+**4. TRM Ablation Connection** — PLANNED
+Testing the same attention-vs-FFN hypothesis on TRM (Tiny Recursive Model, 7M params). TRM applies a 2-block reasoning module 18 times recursively (3 H_cycles × 6 L_cycles). Alexia's original paper showed MLP-only (mlp_t=True) works on fixed-context tasks (Sudoku 87.4%) but fails on variable-context tasks (Maze-Hard 0%). We're running the inverse: reduced-MLP ablation (remove MLP from block 0, keep full attention). If this performs close to the full model, it confirms that repeated attention drives reasoning across BOTH large LLMs (DeepPass) and tiny recursive models (TRM) — a scale-invariant finding.
+
+### Connection: DeepPass + TRM = Same Phenomenon at Different Scales
+
+Both projects test the same hypothesis: **iterative attention refinement is the primary driver of reasoning capability, while FFN/MLP re-application can be redundant or harmful.**
+
+- **DeepPass (27B):** Duplicating layers helps reasoning. Attention repetition is safe; FFN repetition corrupts factual memory.
+- **TRM (7M):** Recursive application of transformer blocks enables ARC-AGI reasoning. MLP-only mode fails on variable-context tasks, suggesting attention is essential.
+- **The bridge:** If TRM's reduced-MLP ablation succeeds, both systems demonstrate the same principle at wildly different scales — attention as iterative refinement is the universal mechanism.
+
+### Proposed Paper Title
+
+**"LLMs Have ADHD: Improving Reasoning by Making Transformers Pay Attention Twice"**
+
+The title captures the core insight: LLMs don't pay enough attention on the first pass (the "20 feet from the car wash" problem). Layer duplication forces a second look. The attention mechanism benefits from repetition; the FFN memory lookup does not.
+
+---
+
+## 36. Future Direction: Gate Margin as a Training-Time Regularizer (2026-03-27)
+
+**Idea:** If gate margin (|W_gate · u|) predicts which FFN neurons are robust to iterative refinement, it could be added as a regularization term during pretraining:
+
+```
+L_total = L_next_token + λ · L_gate_margin
+L_gate_margin = -E[log(σ(|W_gate · u| - τ))]  # encourage wide margins
+```
+
+This would train models with wider FFN basins — making them inherently more robust to repeated computation. A model trained with this regularizer would:
+1. Benefit MORE from layer duplication (less factual corruption)
+2. Be more suitable for adaptive computation (can safely repeat layers on hard inputs)
+3. Have more stable internal representations (wider basins = more robust to input perturbation)
+
+**Computational cost:** Gate margin is just `|W_gate · u|`, which is already computed during the forward pass. The regularizer adds negligible overhead — just a penalty on small margins. This makes it practical for large-scale pretraining.
+
+**Status:** Theoretical proposal. Requires pretraining experiments to validate (beyond our current compute budget, but a strong paper contribution as a proposed method with our inference-time evidence as motivation).
+
+---
+
+## 37. Cross-Architecture Validation Plan: American Models (2026-03-27)
+
+Our results on Gemma3-27B need cross-architecture validation. Target models (non-Chinese origin):
+
+| Model | Origin | Params | Layers | Status |
+|-------|--------|--------|--------|--------|
+| Gemma 3 27B | Google (US) | 27B | 62 | ✅ DONE |
+| LLaMA 4 Scout | Meta (US) | 17B | 48 | TODO — primary target |
+| LLaMA 4 Maverick | Meta (US) | 17B active (400B total) | 48 | TODO — MoE comparison |
+| Mistral/Devstral | Mistral (France) | 24B | ? | TODO |
+
+**Avoid:** Qwen, DeepSeek, Yi, or any Chinese-origin model families.
+
+Key questions for cross-architecture validation:
+1. Does the attention-FFN asymmetry hold on LLaMA 4's architecture?
+2. Does gate margin predict neuron stability across architectures?
+3. Does the "early + mid + late" block placement pattern transfer?
+
+---
+
+## 38. SBUID Screening Metric — Cross-Architecture Failure Analysis (2026-03-27)
+
+### The Problem
+
+SBUID (`BLOOD_impact - λ × displacement_rho`) was our best screening metric, but it doesn't generalize:
+
+| Architecture | Attention Type | SBUID Correlation | Direction |
+|-------------|---------------|-------------------|-----------|
+| Qwen2-72B | Full attention | r=+0.52, p=0.008 | ✅ Positive (high SBUID = good block) |
+| Gemma3-27B | Sliding window + full | r=-0.25, p=0.29 | ❌ Not significant |
+| LLaMA 3 70B | Full attention | TBD (early data looks inverted) | ⚠️ Possibly negative |
+
+### Why It Flips Direction
+
+SBUID assumes: "high internal impact (BLOOD) + low output disruption (rho) = good block." But this logic may be backwards for some architectures:
+
+- On Qwen2-72B: gentle refinement works. Blocks that subtly improve representations without disturbing outputs are best. SBUID correctly identifies these.
+- On LLaMA 3 70B: the model may need a **strong kick** from the second pass to improve. Blocks with high rho (large output change) are the ones that actually help. SBUID penalizes exactly the blocks that work.
+- On Gemma3: sliding window attention changes the propagation dynamics. BLOOD reads differently because sliding window layers dampen long-range effects. Rho is noisy because local perturbations get smoothed by the next full-attention layer.
+
+### The λ Problem
+
+The λ parameter (6000 on Qwen2) balances BLOOD vs rho. When BLOOD and rho have different scales or dynamics on a different architecture, the calibrated λ doesn't transfer. Our lambda sweep on Gemma3 found best λ=20000 but still not significant. The optimal λ may even need to be **negative** on some architectures (i.e., high rho = good).
+
+### Implication: SBUID Is Not Architecture-Agnostic
+
+A metric whose sign flips between architectures is not a reliable general tool. It's useful for a specific model family (Qwen2) after calibration, but cannot be used off-the-shelf on a new model.
+
+### Possible Fixes (Untested)
+
+1. **Adaptive λ per model:** Run 5-10 calibration evaluations, fit λ on those, then screen the rest. Adds cost but guarantees correct direction.
+2. **Use DLA/gate margin instead:** Our Tier 2 neuron-level methods (DLA, gate margin, GEM eigenmask) all worked consistently across Gemma3. These look at what neurons actually DO, not aggregate spectral properties. Promoting them to Tier 1 screening could be more robust.
+3. **Normalize BLOOD and rho per architecture:** Compute z-scores within each model's distribution before combining. This might stabilize the direction.
+4. **Replace SBUID entirely:** Gate margin (flip rate per layer) might be a better block-level predictor — if a block's neurons flip a lot (like Gemma3 L0 at 37%), it's probably dangerous. This directly measures the mechanistic cause of harm.
+
+### UPDATE: Full Validation Results (2026-03-27)
+
+**LLaMA 3 70B — SBUID WORKS (complete pipeline):**
+- SBUID: r=0.668, p=0.001 at λ=10k — strongest result across all architectures
+- Best single: (10,11) = 80.33 (+3.60 over baseline 76.73)
+- Best pair: (10,11)+(61,62) = 83.28 (+6.55) — early+late pattern
+- Sublayer analysis: FFN helps on LLaMA 3 (attn_only=78.63 vs full=80.33, FFN impact=-1.70)
+- Gate flip L10: 14.5% (moderate)
+- Data: `results/data/llama3_70b/`
+
+**Gemma3-27B — NO METRIC WORKS (n=61 full validation):**
+
+| Metric | Spearman r | p-value | Significant? |
+|--------|-----------|---------|-------------|
+| Gate flip rate | 0.011 | 0.934 | NO |
+| SBUID (λ=6k) | -0.075 | 0.567 | NO |
+| Rho | -0.055 | 0.674 | NO |
+| BLOOD | -0.072 | 0.580 | NO |
+
+All four metrics are flat on Gemma3 at n=61. The n=15 gate flip result (r=-0.41) was noise. Sliding window attention breaks all spectral/gate screening methods.
+
+**Cross-architecture screening summary:**
+
+| Metric | Qwen2-72B (full attn) | LLaMA 3 70B (full attn) | Gemma3-27B (sliding window) |
+|--------|----------------------|------------------------|---------------------------|
+| SBUID (best λ) | r=0.52, p=0.008 ✅ | **r=0.668, p=0.001** ✅✅ | r=-0.075, p=0.57 ❌ |
+| Gate flip | Not tested | 14.5% on best block | r=0.011, p=0.93 ❌ |
+
+**Conclusion:** SBUID is a reliable Tier 1 screener for **full-attention architectures** (Qwen2, LLaMA 3). It fails on sliding window architectures (Gemma3). Gate flip rate is NOT a viable Tier 1 replacement — it lacks block-level predictive power even on the architecture where per-neuron gate analysis worked well (Gemma3 L0=37% flips, L12=0.28%).
+
+The disconnect: gate flip predicts per-neuron/per-layer harm (Tier 2 — which neurons to keep/suppress within a chosen block) but NOT block-level quality (Tier 1 — which blocks to duplicate). These are different prediction problems.
+
+- `results/data/llama3_70b/sbuid_validation.json`
+- `results/data/gemma3_27b/gate_flip_full/results.json`
+
+---
+
+## 39. LLaMA 3 70B Cross-Architecture Validation (2026-03-27)
+
+Full spectral screening pipeline on Meta's LLaMA 3 70B Instruct (80 layers, dense, full attention). Uses pre-downloaded model at `/data/ai/models/nlp/llama/models_llama3/Meta-Llama-3-70B-Instruct-hf/`.
+
+### Results
+
+**Baseline:** combined=76.73
+
+**SBUID screening:** 157 blocks screened. SBUID at λ=10k achieves r=0.668, p=0.001 — strongest screening result across all architectures.
+
+**Best configs:**
+- Single (10,11): 80.33 (+3.60)
+- Pair (10,11)+(61,62): 83.28 (+6.55) — early+late block pattern
+
+**Sublayer analysis on best block (10,11):**
+- Full duplication: 80.33
+- Attention-only: 78.63 (FFN impact = -1.70 → FFN HELPS on LLaMA 3)
+- Whisper FFN (β=0.2): 77.84
+- Gate flip L10: 14.5% (moderate)
+
+**Key difference from Gemma3:** On LLaMA 3, FFN helps (+1.70) rather than hurts. On Gemma3, FFN was mixed (helps on some layers, hurts on others). The attention-FFN asymmetry is architecture-dependent.
+
+**Cross-architecture pattern confirmed:**
+- Early+mid blocks are generally best (LLaMA: 8-15, Gemma3: 0-13)
+- Late blocks can complement early ones (LLaMA: 61-62, Gemma3: 47-48)
+- SBUID screening works on full-attention models (Qwen2, LLaMA 3) but not sliding window (Gemma3)

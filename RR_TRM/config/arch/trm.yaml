@@ -26,5 +26,6 @@ pos_encodings: rope
 forward_dtype: bfloat16
 
 mlp_t: False # use mlp on L instead of transformer
+reduced_mlp: False # only last L_level block keeps MLP (ablation)
 puzzle_emb_len: 16 # if non-zero, its specified to this value
 no_ACT_continue: True # No continue ACT loss, only use the sigmoid of the halt which makes much more sense

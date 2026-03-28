@@ -64,11 +64,15 @@ class TinyRecursiveReasoningModel_ACTV1Config(BaseModel):
     puzzle_emb_len: int = 16 # if non-zero, its specified to this value
     no_ACT_continue: bool =  True # No continue ACT loss, only use the sigmoid of the halt which makes much more sense
 
+    # Ablation: reduced MLP — only last block in L_level keeps MLP, others are attention-only
+    reduced_mlp: bool = False
+
 class TinyRecursiveReasoningModel_ACTV1Block(nn.Module):
-    def __init__(self, config: TinyRecursiveReasoningModel_ACTV1Config) -> None:
+    def __init__(self, config: TinyRecursiveReasoningModel_ACTV1Config, has_mlp: bool = True) -> None:
         super().__init__()
 
         self.config = config
+        self.has_mlp = has_mlp
         if self.config.mlp_t:
             self.puzzle_emb_len = -(self.config.puzzle_emb_ndim // -self.config.hidden_size) if self.config.puzzle_emb_len == 0 else self.config.puzzle_emb_len
             self.mlp_t = SwiGLU(
@@ -83,10 +87,11 @@ class TinyRecursiveReasoningModel_ACTV1Block(nn.Module):
                 num_key_value_heads=config.num_heads,
                 causal=False
             )
-        self.mlp = SwiGLU(
-            hidden_size=config.hidden_size,
-            expansion=config.expansion,
-        )
+        if self.has_mlp:
+            self.mlp = SwiGLU(
+                hidden_size=config.hidden_size,
+                expansion=config.expansion,
+            )
         self.norm_eps = config.rms_norm_eps
 
     def forward(self, cos_sin: CosSin, hidden_states: torch.Tensor) -> torch.Tensor:
@@ -100,9 +105,10 @@ class TinyRecursiveReasoningModel_ACTV1Block(nn.Module):
         else:
             # Self Attention
             hidden_states = rms_norm(hidden_states + self.self_attn(cos_sin=cos_sin, hidden_states=hidden_states), variance_epsilon=self.norm_eps)
-        # Fully Connected
-        out = self.mlp(hidden_states)
-        hidden_states = rms_norm(hidden_states + out, variance_epsilon=self.norm_eps)
+        # Fully Connected (skip if this block has no MLP — reduced_mlp ablation)
+        if self.has_mlp:
+            out = self.mlp(hidden_states)
+            hidden_states = rms_norm(hidden_states + out, variance_epsilon=self.norm_eps)
         return hidden_states
 
 class TinyRecursiveReasoningModel_ACTV1ReasoningModule(nn.Module):
@@ -149,7 +155,15 @@ class TinyRecursiveReasoningModel_ACTV1_Inner(nn.Module):
             pass
 
         # Reasoning Layers
-        self.L_level = TinyRecursiveReasoningModel_ACTV1ReasoningModule(layers=[TinyRecursiveReasoningModel_ACTV1Block(self.config) for _i in range(self.config.L_layers)])
+        if self.config.reduced_mlp:
+            # Only last block keeps MLP; earlier blocks are attention-only
+            blocks = [
+                TinyRecursiveReasoningModel_ACTV1Block(self.config, has_mlp=(i == self.config.L_layers - 1))
+                for i in range(self.config.L_layers)
+            ]
+        else:
+            blocks = [TinyRecursiveReasoningModel_ACTV1Block(self.config) for _i in range(self.config.L_layers)]
+        self.L_level = TinyRecursiveReasoningModel_ACTV1ReasoningModule(layers=blocks)
 
         # Initial states
         self.H_init = nn.Buffer(trunc_normal_init_(torch.empty(self.config.hidden_size, dtype=self.forward_dtype), std=1), persistent=True)
