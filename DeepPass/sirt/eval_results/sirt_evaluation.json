@@ -1,0 +1,35 @@
+{
+  "model": "SIRT-172M (stage3_final)",
+  "k_comparison": [
+    {
+      "K": 1,
+      "math": 0.0,
+      "eq": 0.0,
+      "combined": 0.0
+    },
+    {
+      "K": 2,
+      "math": 0.018749812874996257,
+      "eq": 0.0,
+      "combined": 0.9374906437498128
+    },
+    {
+      "K": 3,
+      "math": 0.018749812874996257,
+      "eq": 0.0,
+      "combined": 0.9374906437498128
+    },
+    {
+      "K": 4,
+      "math": 0.0,
+      "eq": 0.0,
+      "combined": 0.0
+    }
+  ],
+  "adaptive_behavior": {
+    "easy_mean_K": 1.1849609375,
+    "hard_mean_K": 1.189013671875,
+    "difference": 0.004052734374999867,
+    "is_adaptive": true
+  }
+}

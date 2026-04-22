@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLMs Have ADHD — Research Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+:root{--bg:#0a0e14;--surface:#111820;--surface2:#1a2230;--surface3:#222d3d;--border:#2a3545;--text:#d4dce8;--text2:#7a8a9e;--accent:#4facfe;--green:#2ecc71;--red:#e74c3c;--orange:#f39c12;--purple:#9b59b6;--cyan:#00cec9;--gold:#f1c40f;--success-bg:rgba(46,204,113,0.06);--fail-bg:rgba(231,76,60,0.06);--mixed-bg:rgba(243,156,18,0.06);--key-bg:rgba(79,172,254,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
+::selection{background:var(--accent);color:#000}
+
+/* === SIDEBAR === */
+#sidebar{width:320px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+#sidebar-header{padding:20px;border-bottom:1px solid var(--border)}
+#sidebar-header h1{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#sidebar-header .sub{font-size:11px;color:var(--text2);margin-top:4px}
+#controls{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap}
+.ctrl-btn{font-size:10px;padding:4px 10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ctrl-btn.on{background:var(--accent);color:#000;border-color:var(--accent)}
+#timeline{flex:1;overflow-y:auto;padding:8px 0}
+.tl-track{border-bottom:1px solid var(--border)}
+.tl-track-header{padding:10px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.tl-track-header:hover{background:var(--surface2)}
+.tl-track-header .arrow{transition:transform .2s;font-size:9px}
+.tl-track.collapsed .arrow{transform:rotate(-90deg)}
+.tl-track.collapsed .tl-items{display:none}
+.tl-item{position:relative;padding:8px 16px 8px 40px;cursor:pointer;transition:all .15s;border-left:3px solid transparent;font-size:12px;line-height:1.4}
+.tl-item:hover{background:var(--surface2)}
+.tl-item.active{background:var(--surface3);border-left-color:var(--accent)}
+.tl-item::before{content:'';position:absolute;left:18px;top:14px;width:8px;height:8px;border-radius:50%;border:2px solid var(--border)}
+.tl-item.success::before{border-color:var(--green);background:var(--green)}
+.tl-item.failure::before{border-color:var(--red);background:var(--red)}
+.tl-item.mixed::before{border-color:var(--orange);background:var(--orange)}
+.tl-item.key::before{border-color:var(--accent);background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.tl-item .date{font-size:10px;color:var(--text2);display:block;margin-top:1px}
+.tl-item .badge{font-size:9px;padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:600}
+.badge-good{background:rgba(46,204,113,.15);color:var(--green)}
+.badge-bad{background:rgba(231,76,60,.12);color:var(--red)}
+.badge-key{background:rgba(79,172,254,.15);color:var(--accent)}
+.badge-mixed{background:rgba(243,156,18,.15);color:var(--orange)}
+.hidden-item{display:none !important}
+
+/* === MAIN === */
+#main{flex:1;overflow-y:auto;overflow-x:hidden}
+.page{display:none;padding:48px;max-width:1100px;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page h1{font-size:28px;font-weight:700;margin-bottom:4px}
+.page .subtitle{color:var(--text2);font-size:13px;margin-bottom:28px}
+.page .date-stamp{font-size:11px;color:var(--text2);margin-bottom:24px;font-style:italic}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:20px;transition:border-color .2s}
+.card:hover{border-color:var(--surface3)}
+.card.success-card{background:linear-gradient(135deg,var(--success-bg),var(--surface))}
+.card.fail-card{background:linear-gradient(135deg,var(--fail-bg),var(--surface))}
+.card.key-card{background:linear-gradient(135deg,var(--key-bg),var(--surface));border-color:rgba(79,172,254,.2)}
+.no-bg .card.success-card,.no-bg .card.fail-card,.no-bg .card.key-card{background:var(--surface) !important;border-color:var(--border) !important}
+.card h3{font-size:15px;margin-bottom:12px;color:var(--accent)}
+.card p,.card li{font-size:13px;line-height:1.75;color:var(--text2)}
+.card strong{color:var(--text)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center}
+.stat .val{font-size:30px;font-weight:700}
+.stat .lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+.stat.g .val{color:var(--green)}.stat.r .val{color:var(--red)}.stat.a .val{color:var(--accent)}.stat.p .val{color:var(--purple)}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:14px 0}
+th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);color:var(--accent);font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+td{padding:7px 10px;border-bottom:1px solid rgba(42,53,69,.5)}
+tr:hover td{background:var(--surface2)}
+.hl{color:var(--green);font-weight:600}.bad{color:var(--red);font-weight:600}
+.math-block{background:var(--surface2);padding:16px 20px;border-radius:8px;margin:14px 0;overflow-x:auto;font-size:14px}
+
+/* === MAZE VIZ === */
+.maze-wrap{display:flex;gap:32px;flex-wrap:wrap;margin:16px 0}
+.maze-panel h4{font-size:12px;color:var(--text2);margin-bottom:6px;text-align:center}
+.maze-grid{display:inline-grid;gap:0;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.maze-grid .c{width:13px;height:13px;transition:background .25s}
+.maze-ctrls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:16px 0}
+.maze-ctrls button{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit;transition:all .15s}
+.maze-ctrls button:hover,.maze-ctrls button.on{background:var(--accent);color:#000;border-color:var(--accent)}
+.maze-ctrls .info{font-size:12px;color:var(--text2);min-width:280px}
+.slider-wrap{width:100%;margin:8px 0}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+.legend{display:flex;gap:14px;font-size:10px;color:var(--text2);flex-wrap:wrap;margin:10px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:middle;margin-right:3px}
+
+/* === FOOTER === */
+#sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h1>LLMs Have ADHD</h1>
+    <div class="sub">Iterative Latent Computation for Language Models</div>
+  </div>
+  <div id="controls">
+    <button class="ctrl-btn on" onclick="toggleFilter(this,'success')" data-f="success" title="Show/hide successful experiments">Successes</button>
+    <button class="ctrl-btn on" onclick="toggleFilter(this,'failure')" data-f="failure" title="Show/hide failed experiments">Failures</button>
+    <button class="ctrl-btn on" onclick="toggleFilter(this,'mixed')" data-f="mixed">Mixed</button>
+    <button class="ctrl-btn on" onclick="toggleBg(this)" id="bg-toggle">BG Effects</button>
+  </div>
+  <div id="timeline">
+
+    <!-- TRACK 1 -->
+    <div class="tl-track" data-track="t1">
+      <div class="tl-track-header" onclick="togTrack(this)">Layer Duplication (72B / 27B) <span class="arrow">▾</span></div>
+      <div class="tl-items">
+        <div class="tl-item success" data-s="success" onclick="go('t1-repro')">Reproduce Ng RYS <span class="badge badge-good">76.76</span><span class="date">Mar 15</span></div>
+        <div class="tl-item success" data-s="success" onclick="go('t1-spectral')">Spectral screening<span class="date">Mar 16-18</span></div>
+        <div class="tl-item failure" data-s="failure" onclick="go('t1-adapter')">Junction adapters <span class="badge badge-bad">all hurt</span><span class="date">Mar 18-20</span></div>
+        <div class="tl-item success" data-s="success" onclick="go('t1-greedy')">Greedy pair stacking <span class="badge badge-good">79.91</span><span class="date">Mar 20</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t1-alpha')">Per-layer alpha tuning <span class="badge badge-key">84.07</span><span class="date">Mar 22</span></div>
+        <div class="tl-item success" data-s="success" onclick="go('t1-gemma3')">Gemma3-27B quad <span class="badge badge-good">85.58</span><span class="date">Mar 25-26</span></div>
+        <div class="tl-item mixed" data-s="mixed" onclick="go('t1-lmeval')">lm-eval benchmarks <span class="badge badge-mixed">±</span><span class="date">Mar 26-27</span></div>
+        <div class="tl-item failure" data-s="failure" onclick="go('t1-sublayer')">Sublayer: FFN hurts <span class="badge badge-bad">-6.4%</span><span class="date">Mar 27</span></div>
+        <div class="tl-item mixed" data-s="mixed" onclick="go('t1-kv')">KV cache fix <span class="date">Mar 28</span></div>
+        <div class="tl-item failure" data-s="failure" onclick="go('t1-trained')">Trained recursion <span class="badge badge-bad">failed</span><span class="date">Mar 29</span></div>
+      </div>
+    </div>
+
+    <!-- TRACK 2 -->
+    <div class="tl-track" data-track="t2">
+      <div class="tl-track-header" onclick="togTrack(this)">From-Scratch / PSRT <span class="arrow">▾</span></div>
+      <div class="tl-items">
+        <div class="tl-item failure" data-s="failure" onclick="go('t2-psrt')">PSRT 1.1B training <span class="badge badge-bad">no K-scale</span><span class="date">Mar 30</span></div>
+        <div class="tl-item mixed" data-s="mixed" onclick="go('t2-kdeg')">K-degradation sweep <span class="badge badge-mixed">K>2 hurts</span><span class="date">Mar 30</span></div>
+        <div class="tl-item failure" data-s="failure" onclick="go('t2-llm2trm')">LLM→TRM conversion <span class="badge badge-bad">failed</span><span class="date">Mar 30</span></div>
+      </div>
+    </div>
+
+    <!-- TRACK 3 -->
+    <div class="tl-track" data-track="t3">
+      <div class="tl-track-header" onclick="togTrack(this)">TRM Interpretability <span class="arrow">▾</span></div>
+      <div class="tl-items">
+        <div class="tl-item failure" data-s="failure" onclick="go('t3-buggy')">Initial probes (buggy) <span class="badge badge-bad">wrong weights</span><span class="date">Apr 2-3</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t3-ckptfix')">Checkpoint fix (3 bugs) <span class="badge badge-key">97.3%</span><span class="date">Apr 4</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t3-probegap')">Probe gap: 12.1% hidden <span class="badge badge-key">KEY</span><span class="date">Apr 7</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t3-overconf')">Overconfidence trap <span class="badge badge-key">KEY</span><span class="date">Apr 7</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t3-ablation')">5-way ablation (+18pp) <span class="badge badge-key">KEY</span><span class="date">Apr 7</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t3-softbfs')">Soft BFS visualization <span class="badge badge-key">DEMO</span><span class="date">Apr 7</span></div>
+      </div>
+    </div>
+
+    <!-- TRACK 4 -->
+    <div class="tl-track" data-track="t4">
+      <div class="tl-track-header" onclick="togTrack(this)">Solver + SpatialEval <span class="arrow">▾</span></div>
+      <div class="tl-items">
+        <div class="tl-item failure" data-s="failure" onclick="go('t4-v1')">SpatialEval v1 (no bypass) <span class="badge badge-bad">solver hurts</span><span class="date">Apr 5</span></div>
+        <div class="tl-item key" data-s="success" onclick="go('t4-v2')">SpatialEval v2 bypass <span class="badge badge-key">65% → 70.6%</span><span class="date">Apr 6</span></div>
+        <div class="tl-item mixed" data-s="mixed" onclick="go('t4-kscale')">K-scaling (62 runs) <span class="badge badge-mixed">35% mono</span><span class="date">Apr 6-7</span></div>
+        <div class="tl-item mixed" data-s="mixed" onclick="go('t4-memsweep')">Memory slot sweep (51 runs) <span class="badge badge-mixed">~70% cap</span><span class="date">Apr 7</span></div>
+        <div class="tl-item failure" data-s="failure" onclick="go('t4-mem128')">mem128 + 5k steps <span class="badge badge-bad">39%</span><span class="date">Apr 7</span></div>
+      </div>
+    </div>
+
+    <!-- TRACK 5 -->
+    <div class="tl-track" data-track="t5">
+      <div class="tl-track-header" onclick="togTrack(this)">Cross-Model (Gemma 4) <span class="arrow">▾</span></div>
+      <div class="tl-items">
+        <div class="tl-item key" data-s="success" onclick="go('t5-gemma')">Gemma 4 baseline: 24.5% <span class="badge badge-key">scale fails</span><span class="date">Apr 7</span></div>
+        <div class="tl-item mixed" data-s="mixed" onclick="go('t5-g4solver')">Gemma 4 + solver <span class="badge badge-mixed">running</span><span class="date">Apr 7</span></div>
+      </div>
+    </div>
+
+  </div>
+  <div id="sidebar-footer">Apr 2026 · ~450 GPU-hrs · B200 192GB · UF HiPerGator</div>
+</div>
+
+<div id="main">
+
+<!-- ===== OVERVIEW ===== -->
+<div class="page active" id="p-overview">
+  <h1>Research Dashboard</h1>
+  <div class="subtitle">Senior Thesis: Iterative Latent Computation for Language Models · Jie Tao · University of Florida · Spring 2026</div>
+  <div class="stat-row">
+    <div class="stat g"><div class="val">70.6%</div><div class="lbl">SpatialEval (vs 33.4%)</div></div>
+    <div class="stat a"><div class="val">12.1%</div><div class="lbl">Hidden Knowledge Gap</div></div>
+    <div class="stat p"><div class="val">+18.1pp</div><div class="lbl">Loss Synergy</div></div>
+    <div class="stat r"><div class="val">24.5%</div><div class="lbl">Gemma 4 31B (scale fails)</div></div>
+  </div>
+  <div class="card key-card">
+    <h3>Core Thesis</h3>
+    <p>LLMs process text left-to-right in a single pass — they lack iterative internal computation. We prove that a <strong>12M-parameter bidirectional solver</strong> bolted onto a frozen Llama 3.1 8B doubles spatial reasoning accuracy on a NeurIPS 2024 benchmark. Crucially, <strong>scaling alone fails</strong>: Gemma 4 31B performs <em>worse</em> (24.5%) than our augmented 8B system (70.6%).</p>
+  </div>
+  <div class="card">
+    <h3>Three Lines of Evidence</h3>
+    <p><strong>1. External Solver Architecture:</strong> A bidirectional "thinker" produces memory tokens for the frozen "talker" LLM. Bypass mode (solver augments, doesn't replace input) is critical.<br>
+    <strong>2. TRM Mechanistic Analysis:</strong> Standard BCE + StableMax creates an overconfidence trap — 98.5% confident but 80.6% correct, frozen at a wrong fixed point. Brier + monotonicity + softmax breaks the trap via an 18.1pp synergistic interaction.<br>
+    <strong>3. Runtime Layer Duplication:</strong> Duplicating attention blocks at inference yields +7.31 over Ng's result on 72B. FFN duplication hurts — attention-only is the key.</p>
+  </div>
+</div>
+
+<!-- ===== T1: REPRO ===== -->
+<div class="page" id="p-t1-repro">
+  <h1>1. Reproduce Ng's RYS Result</h1>
+  <div class="date-stamp">March 15, 2026 · Qwen2-72B (80 layers)</div>
+  <div class="card success-card">
+    <h3>Confirmed: Layer duplication improves reasoning</h3>
+    <p>Duplicating layers [45,52) of calme-2.1-qwen2-72b reproduces Ng's result: combined score 76.76 vs 70.52 baseline (+6.24). The mechanism: the first pass computes $h \to F(h)$, the second pass computes $F(h) \to F(F(h))$, acting as iterative refinement with shared weights.</p>
+    <div class="math-block">$$h^{(2)} = F(F(h^{(0)})), \quad \rho_{\text{disp}} = \frac{\|F(F(h)) - F(h)\|}{\|F(h) - h\|} < 1$$</div>
+    <p>Displacement ratio $\rho < 1$ means the block <strong>converges</strong> when repeated — each pass moves the representation closer to a fixed point.</p>
+  </div>
+</div>
+
+<!-- ===== T1: SPECTRAL ===== -->
+<div class="page" id="p-t1-spectral">
+  <h1>2. Spectral Screening Framework</h1>
+  <div class="date-stamp">March 16–18 · 7B + 72B models</div>
+  <div class="card success-card">
+    <h3>Predicting good blocks without brute-force search</h3>
+    <p>Ng tested 3,241 configurations by brute force. We developed spectral metrics that predict which blocks benefit from duplication:</p>
+    <div class="math-block">$$\text{SBUID}_0 = \text{BLOOD}_{\text{impact}} - 6000 \cdot \rho_{\text{perturbation}}$$</div>
+    <p>Achieves <strong>Spearman r=0.515, p=0.008</strong> on 72B — statistically significant block ranking from a 5-minute computation instead of days of evaluation.</p>
+  </div>
+</div>
+
+<!-- ===== T1: ADAPTER ===== -->
+<div class="page" id="p-t1-adapter">
+  <h1>3. Junction Adapters (Failed)</h1>
+  <div class="date-stamp">March 18–20 · 7B model</div>
+  <div class="card fail-card">
+    <h3>Every trained adapter hurts good configurations</h3>
+    <p>Tried 6 adapter approaches (LoRA, BLOOD-guided, junction smoothing) at the seam between first and second pass. All degraded the best duplication configs. The untrained duplication works <em>because</em> it reuses exact weights — any learned perturbation breaks the fixed-point convergence.</p>
+  </div>
+</div>
+
+<!-- ===== T1: ALPHA ===== -->
+<div class="page" id="p-t1-alpha">
+  <h1>5. Per-Layer Alpha Tuning</h1>
+  <div class="date-stamp">March 22 · 72B, 300 grid evaluations</div>
+  <div class="card key-card">
+    <h3>Best result: +7.31 over Ng's published score</h3>
+    <p>Instead of $h_{\text{out}} = F(F(h))$, blend with per-layer alphas:</p>
+    <div class="math-block">$$h_{\text{out}}^{(\ell)} = h_1^{(\ell)} + \alpha_\ell \cdot (h_2^{(\ell)} - h_1^{(\ell)})$$</div>
+    <p>Optimized via grid search (300 evals) and Bayesian optimization (60 evals). Triple-block per-layer alpha achieves <strong>84.07 combined</strong> (Ng: 76.76).</p>
+    <table>
+      <tr><th>Config</th><th>Combined</th><th>Δ vs Ng</th></tr>
+      <tr><td>Baseline 72B</td><td>70.52</td><td>—</td></tr>
+      <tr><td>Ng (45,52) @1.0</td><td>76.76</td><td>—</td></tr>
+      <tr><td>Whisper-alpha quad</td><td>82.58</td><td>+5.82</td></tr>
+      <tr><td>Per-layer triple (grid)</td><td class="hl">84.07</td><td class="hl">+7.31</td></tr>
+      <tr><td>Gemma3-27B quad</td><td class="hl">85.58</td><td>N/A</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== T1: GREEDY ===== -->
+<div class="page" id="p-t1-greedy"><h1>4. Greedy Pair Stacking</h1><div class="date-stamp">March 20 · 72B</div><div class="card success-card"><h3>Multi-block duplication: 79.91 combined</h3><p>Greedily stack two non-overlapping duplicated blocks: (0,7) + (45,52). First evidence that multi-block stacking provides additive benefit.</p></div></div>
+
+<!-- ===== T1: GEMMA3 ===== -->
+<div class="page" id="p-t1-gemma3"><h1>6. Gemma3-27B Cross-Architecture</h1><div class="date-stamp">March 25–26</div><div class="card success-card"><h3>85.58 combined — best overall</h3><p>Quad-block duplication (4,5)+(12,13)+(16,17)+(20,21) on Gemma3-27B achieves the highest combined score across all experiments. Layer duplication is architecture-agnostic.</p></div></div>
+
+<!-- ===== T1: LMEVAL ===== -->
+<div class="page" id="p-t1-lmeval"><h1>7. lm-eval Standardized Benchmarks</h1><div class="date-stamp">March 26–27 · 72B</div><div class="card"><h3>Mixed: helps reasoning, hurts knowledge</h3><table><tr><th>Task</th><th>Effect</th></tr><tr><td>IFEval</td><td class="hl">+2.3%</td></tr><tr><td>MuSR</td><td class="hl">+1.3%</td></tr><tr><td>MATH</td><td class="bad">-6.4%</td></tr><tr><td>BBH, MMLU-Pro</td><td>~flat</td></tr></table></div></div>
+
+<!-- ===== T1: SUBLAYER ===== -->
+<div class="page" id="p-t1-sublayer"><h1>8. Sublayer Analysis: FFN Hurts</h1><div class="date-stamp">March 27</div><div class="card fail-card"><h3>FFN re-execution "overshoots" stored facts</h3><p>Attention-only duplication preserves the reasoning benefit while avoiding FFN re-retrieval corruption. This is why MATH degrades: the FFN stores factual associations that get distorted by double execution.</p></div></div>
+
+<!-- ===== T1: KV / TRAINED ===== -->
+<div class="page" id="p-t1-kv"><h1>9. KV Cache Fix</h1><div class="date-stamp">March 28</div><div class="card"><h3>LayerIdxWrapper solves shared-module KV indexing</h3><p>Deep-copied layers with unique <code>layer_idx</code> + <code>layer_types=None</code> in config allow proper KV caching for duplicated models.</p></div></div>
+<div class="page" id="p-t1-trained"><h1>10. Trained Recursion (Failed)</h1><div class="date-stamp">March 29</div><div class="card fail-card"><h3>Verdict: only untrained duplication helps</h3><p>LoRA fine-tuning for multi-pass showed no improvement. Training the model to "re-read" doesn't work — the benefit comes from the raw mathematical properties of applying the same function twice, not from learned second-pass behavior.</p></div></div>
+
+<!-- ===== T2: PSRT ===== -->
+<div class="page" id="p-t2-psrt"><h1>PSRT: From-Scratch Recursive Model</h1><div class="date-stamp">March 30 · 1.1B params</div><div class="card fail-card"><h3>No K-scaling on from-scratch training</h3><p>Projected Split-State Recurrent Transformer trained from scratch. Neither v1 (fineweb-edu only) nor v2 (50% general + 25% math + 25% science) showed K-scaling benefits. The recursive mechanism needs to be bolted onto an existing pretrained LLM, not trained from scratch.</p></div></div>
+<div class="page" id="p-t2-kdeg"><h1>K-Degradation Sweep</h1><div class="date-stamp">March 30</div><div class="card"><h3>K > 2 always hurts</h3><p>On Mistral 7B block [28,29), accuracy peaks at K=2 and degrades for K=3,4,5. More passes cause error amplification. This motivated the solver architecture (bidirectional, not autoregressive).</p></div></div>
+<div class="page" id="p-t2-llm2trm"><h1>LLM→TRM Conversion</h1><div class="date-stamp">March 30</div><div class="card fail-card"><h3>Cannot convert pretrained LLM to TRM format</h3><p>Attempted to wrap Llama layers in TRM's z_H/z_L hierarchy. Architecture mismatch: TRM's bidirectional cross-attention is fundamentally different from LLM's causal attention.</p></div></div>
+
+<!-- ===== T3: CHECKPOINT FIX ===== -->
+<div class="page" id="p-t3-buggy"><h1>TRM Probes (Buggy)</h1><div class="date-stamp">April 2–3</div><div class="card fail-card"><h3>Three bugs made all results meaningless</h3><p>1. <strong>Key prefix:</strong> Checkpoints save <code>model.inner.X</code> but model expects <code>inner.X</code>. <code>strict=False</code> silently loaded nothing.<br>2. <strong>Sort order:</strong> <code>sorted(['step_9765','step_19530'])</code> returns wrong order.<br>3. <strong>Vocab size:</strong> Data has max token=4 but model trained with vocab=6.</p></div></div>
+
+<div class="page" id="p-t3-ckptfix">
+  <h1>TRM Checkpoint Fix — 97.3% Token Accuracy</h1>
+  <div class="date-stamp">April 4</div>
+  <div class="card key-card">
+    <h3>Three critical bugs fixed → paper-matching accuracy</h3>
+    <p>After fixing key prefix stripping, numeric sort, and vocab from checkpoint:</p>
+    <div class="stat-row">
+      <div class="stat g"><div class="val">97.3%</div><div class="lbl">Token accuracy (paper: ~97%)</div></div>
+      <div class="stat g"><div class="val">89.1%</div><div class="lbl">Reachable accuracy</div></div>
+    </div>
+    <p>The model solves 30×30 hard mazes. All subsequent interpretability results are on correctly-loaded models.</p>
+  </div>
+</div>
+
+<!-- ===== T3: PROBE GAP ===== -->
+<div class="page" id="p-t3-probegap">
+  <h1>The Model Knows More Than It Shows</h1>
+  <div class="date-stamp">April 7 · Label-aligned MLP probes on z_H</div>
+  <div class="stat-row">
+    <div class="stat g"><div class="val">95.3%</div><div class="lbl">Probe reach (BASELINE)</div></div>
+    <div class="stat r"><div class="val">83.2%</div><div class="lbl">lm_head reach (BASELINE)</div></div>
+    <div class="stat a"><div class="val">12.1%</div><div class="lbl">Hidden knowledge gap</div></div>
+  </div>
+  <div class="card key-card">
+    <h3>The output head wastes learned spatial knowledge</h3>
+    <table>
+      <tr><th>Model</th><th>Token Acc</th><th>lm_head Reach</th><th>Probe Reach</th><th>Gap</th></tr>
+      <tr><td>FULL_COMBO</td><td>97.3%</td><td>89.2%</td><td>93.0%</td><td>+3.8%</td></tr>
+      <tr><td>BASELINE</td><td>96.8%</td><td>83.2%</td><td class="hl">95.3%</td><td class="hl">+12.1%</td></tr>
+    </table>
+    <p>Brier+monotonicity training closes the gap: FULL_COMBO's lm_head (89.2%) is much closer to its probe (93.0%) — the training objectives teach the model to <strong>express what it already knows</strong>.</p>
+  </div>
+</div>
+
+<!-- ===== T3: OVERCONFIDENCE TRAP ===== -->
+<div class="page" id="p-t3-overconf">
+  <h1>The Overconfidence Trap</h1>
+  <div class="date-stamp">April 7 · Diagnostic analysis on 200 mazes</div>
+  <div class="card key-card">
+    <h3>BCE + StableMax → confidently wrong, permanently frozen</h3>
+    <table>
+      <tr><th>Metric</th><th>FULL_COMBO</th><th>BASELINE</th><th>Meaning</th></tr>
+      <tr><td>Step 0 confidence</td><td>96.4%</td><td class="bad">98.5%</td><td>BL more confident</td></tr>
+      <tr><td>Step 0 reach acc</td><td class="hl">98.1%</td><td class="bad">80.6%</td><td>...but less accurate</td></tr>
+      <tr><td>Step 1 reach acc</td><td class="hl">100%</td><td class="bad">78.7%</td><td>FC done; BL stuck</td></tr>
+      <tr><td>cos(z_H step 0→1)</td><td>0.892</td><td>0.964</td><td>FC still refining; BL frozen</td></tr>
+    </table>
+    <p style="margin-top:14px"><strong>The mechanism:</strong> BCE's log singularity creates near-zero gradients for confidently-wrong predictions. StableMax has a discontinuous second derivative at $x = 0$:</p>
+    <div class="math-block">$$s(x) = \begin{cases} \frac{1}{1-x} & x < 0 \quad (\text{curvature} = \frac{2}{(1-x)^3}) \\ x + 1 & x \geq 0 \quad (\text{curvature} = 0) \end{cases}$$</div>
+    <p>This Hessian ridge + BCE log singularity + shared weights across 16 ACT steps = the model converges to a <strong>wrong fixed point</strong> and can't escape. Brier loss ($L = (\sigma(z) - y)^2$, bounded, smooth) breaks the trap.</p>
+  </div>
+</div>
+
+<!-- ===== T3: 5-WAY ABLATION ===== -->
+<div class="page" id="p-t3-ablation">
+  <h1>5-Way Loss Function Ablation</h1>
+  <div class="date-stamp">April 7 · All 5 checkpoints from Alexia's ablation suite</div>
+  <div class="card key-card">
+    <h3>+18.1pp of pure synergy</h3>
+    <table>
+      <tr><th>Config</th><th>Brier</th><th>Mono</th><th>Softmax</th><th>Exact Acc</th><th>Step 0 Reach</th><th>Confidence</th><th>ECE</th></tr>
+      <tr><td>BASELINE</td><td>-</td><td>-</td><td>-</td><td>9.1%</td><td class="bad">80.6%</td><td>98.5%</td><td>0.019</td></tr>
+      <tr><td>BRIER_ONLY</td><td class="hl">✓</td><td>-</td><td>-</td><td class="hl">19.8%</td><td>90.7%</td><td>98.8%</td><td>0.014</td></tr>
+      <tr><td>MONO_ONLY</td><td>-</td><td>✓</td><td>-</td><td class="bad">4.2%</td><td>86.1%</td><td>98.2%</td><td>0.015</td></tr>
+      <tr><td>SOFTMAX_ONLY</td><td>-</td><td>-</td><td>✓</td><td>6.9%</td><td>90.7%</td><td>95.9%</td><td class="hl">0.008</td></tr>
+      <tr><td>FULL_COMBO</td><td class="hl">✓</td><td class="hl">✓</td><td class="hl">✓</td><td class="hl">30.8%</td><td class="hl">98.1%</td><td>96.4%</td><td class="hl">0.014</td></tr>
+    </table>
+    <div class="stat-row" style="margin-top:16px">
+      <div class="stat"><div class="val" style="color:var(--text2)">+3.6pp</div><div class="lbl">Sum of individual effects</div></div>
+      <div class="stat g"><div class="val">+21.7pp</div><div class="lbl">Actual improvement</div></div>
+      <div class="stat p"><div class="val">+18.1pp</div><div class="lbl">Synergy (interaction)</div></div>
+    </div>
+    <p>Brier calibrates halting probs → monotonicity constrains them meaningfully → softmax smooths gradients through shared-weight iterations. Without calibration, monotonicity constrains garbage (4.2%). All three must work together.</p>
+  </div>
+</div>
+
+<!-- ===== T3: SOFT BFS ===== -->
+<div class="page" id="p-t3-softbfs">
+  <h1>Soft BFS Visualization</h1>
+  <div class="date-stamp">April 7 · Real TRM data, 30×30 maze, 16 ACT steps</div>
+
+  <div class="card key-card">
+    <h3>Interactive: Watch reachability flood the maze</h3>
+    <p>Click through ACT steps or press <strong>Play</strong>. Green = correctly predicted reachable. Red = missed reachable cell. The FULL_COMBO model solves reachability in 1–2 steps via "parallel soft BFS" — bidirectional attention propagates information across the entire grid simultaneously, unlike sequential BFS which would need ~80+ steps.</p>
+
+    <div class="maze-ctrls">
+      <button onclick="mzStep(0)" id="mb0" class="on">Step 0</button>
+      <button onclick="mzStep(1)" id="mb1">Step 1</button>
+      <button onclick="mzStep(2)" id="mb2">Step 2</button>
+      <button onclick="mzStep(3)" id="mb3">Step 3</button>
+      <button onclick="mzStep(7)" id="mb7">Step 7</button>
+      <button onclick="mzStep(15)" id="mb15">Step 15</button>
+      <button onclick="mzPlay()" id="mbPlay">▶ Play</button>
+      <div class="info" id="mzInfo">ACT Step 0 · 3 H-iterations · Reachable: —</div>
+    </div>
+    <div class="slider-wrap"><input type="range" min="0" max="15" value="0" id="mzSlider" oninput="mzStep(+this.value)"></div>
+
+    <div class="legend">
+      <div class="legend-item"><i style="background:#1a1a2e"></i>Wall</div>
+      <div class="legend-item"><i style="background:#4a5568"></i>Open</div>
+      <div class="legend-item"><i style="background:#22543d"></i>Reachable (truth)</div>
+      <div class="legend-item"><i style="background:#2563eb"></i>Start</div>
+      <div class="legend-item"><i style="background:#dc2626"></i>End</div>
+      <div class="legend-item"><i style="background:rgba(34,197,94,.85)"></i>Correct prediction</div>
+      <div class="legend-item"><i style="background:rgba(248,81,73,.6)"></i>Missed</div>
+      <div class="legend-item"><i style="background:rgba(243,156,18,.5)"></i>False positive</div>
+    </div>
+
+    <div class="maze-wrap">
+      <div class="maze-panel"><h4>Ground Truth</h4><div class="maze-grid" id="mzT" style="grid-template-columns:repeat(30,13px)"></div></div>
+      <div class="maze-panel"><h4 id="fcL">FULL_COMBO</h4><div class="maze-grid" id="mzFC" style="grid-template-columns:repeat(30,13px)"></div></div>
+      <div class="maze-panel"><h4 id="blL">BASELINE</h4><div class="maze-grid" id="mzBL" style="grid-template-columns:repeat(30,13px)"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== T4: SPATIALEVAL ===== -->
+<div class="page" id="p-t4-v1"><h1>SpatialEval v1: No Bypass (Failed)</h1><div class="date-stamp">April 5</div><div class="card fail-card"><h3>Solver REPLACES input → accuracy drops</h3><p>Without bypass, the decoder only sees compressed memory tokens and can't reference the original maze text. K=0=36.5% > K=1=30.5%. The solver hurts because it replaces rather than augments.</p></div></div>
+
+<div class="page" id="p-t4-v2">
+  <h1>SpatialEval v2/v3: Bypass Mode</h1>
+  <div class="date-stamp">April 6–7 · NeurIPS 2024 benchmark</div>
+  <div class="stat-row">
+    <div class="stat r"><div class="val">33.4%</div><div class="lbl">Llama 8B baseline</div></div>
+    <div class="stat g"><div class="val">70.6%</div><div class="lbl">+ Solver (mem32, best)</div></div>
+    <div class="stat r"><div class="val">24.5%</div><div class="lbl">Gemma 4 31B alone</div></div>
+  </div>
+  <div class="card key-card">
+    <h3>Solver doubles accuracy: "Separate the thinker from the talker"</h3>
+    <p>In bypass mode, the frozen decoder sees <strong>[memory tokens | full prompt]</strong>. The bidirectional solver compresses spatial structure into 32 memory tokens that the causal LLM uses as a "cheat sheet."</p>
+    <div class="math-block">$$p(y|x) = F_\omega(y \mid [\underbrace{M_\theta(x)}_{\text{solver memory}};\ x])$$</div>
+    <p>The solver ($M_\theta$, 12M params) is bidirectional — it can see the full maze simultaneously, unlike the causal decoder ($F_\omega$, frozen 8B).</p>
+  </div>
+</div>
+
+<div class="page" id="p-t4-kscale">
+  <h1>K-Scaling: Honest Assessment</h1>
+  <div class="date-stamp">April 6–7 · 62 completed runs</div>
+  <div class="card">
+    <h3>Works for pointer tasks, noisy elsewhere</h3>
+    <table>
+      <tr><th>Task</th><th>d=2 (K1/K8)</th><th>d=8 (K1/K8)</th><th>K8 < K1?</th><th>Strict mono</th></tr>
+      <tr><td>Pointer (n=20)</td><td>6.3/6.4</td><td>34.6/<span class="hl">30.0</span></td><td class="hl">YES (avg)</td><td>2/20</td></tr>
+      <tr><td>Variable (n=22)</td><td>6.3/6.7</td><td><span class="hl">26.7</span>/30.4</td><td class="bad">NO</td><td>1/22</td></tr>
+      <tr><td>Mixed (n=20)</td><td>6.7/6.6</td><td><span class="hl">14.7</span>/15.6</td><td class="bad">NO</td><td>0/20</td></tr>
+    </table>
+    <p>Strict monotonicity: <strong>3 out of 62 runs</strong>. The K-scaling effect is real but unreliable — driven by lucky seeds, not consistent behavior.</p>
+  </div>
+</div>
+
+<div class="page" id="p-t4-memsweep">
+  <h1>Memory Slot Sweep</h1>
+  <div class="date-stamp">April 7 · 51 runs across 5 configurations</div>
+  <div class="card">
+    <h3>~70% ceiling regardless of memory size</h3>
+    <table>
+      <tr><th>Slots</th><th>Runs</th><th>Avg K=1</th><th>Best K=1</th><th>Worst</th></tr>
+      <tr><td>8</td><td>1</td><td>39.0%</td><td>39.0%</td><td>39.0%</td></tr>
+      <tr><td>16</td><td>24</td><td>49.5%</td><td class="hl">70.2%</td><td>39.0%</td></tr>
+      <tr><td>32</td><td>13</td><td>51.0%</td><td class="hl">70.6%</td><td>39.0%</td></tr>
+      <tr><td>64</td><td>12</td><td>44.0%</td><td class="hl">69.6%</td><td>37.2%</td></tr>
+      <tr><td>128</td><td>1</td><td>39.0%</td><td>39.0%</td><td>39.0%</td></tr>
+    </table>
+    <p><strong>Training variance</strong> (avg ~50% vs best ~70%) is the real bottleneck, not memory capacity.</p>
+  </div>
+</div>
+
+<div class="page" id="p-t4-mem128"><h1>mem128 / 5000 Steps (Failed)</h1><div class="date-stamp">April 7</div><div class="card fail-card"><h3>Both hit 39% — unlucky seeds + diminishing returns</h3><p>mem128 has too many slots for 2000 training steps. 5000 steps with mem32 was an unlucky seed. The 70% ceiling is an architecture/stability limit.</p></div></div>
+
+<!-- ===== T5: GEMMA ===== -->
+<div class="page" id="p-t5-gemma">
+  <h1>Gemma 4 31B-IT: Scale ≠ Spatial Reasoning</h1>
+  <div class="date-stamp">April 7</div>
+  <div class="stat-row">
+    <div class="stat r"><div class="val">24.5%</div><div class="lbl">Gemma 4 31B SpatialEval</div></div>
+    <div class="stat"><div class="val" style="color:var(--text2)">33.4%</div><div class="lbl">Llama 3.1 8B</div></div>
+    <div class="stat g"><div class="val">70.6%</div><div class="lbl">Llama 8B + 12M Solver</div></div>
+  </div>
+  <div class="card key-card">
+    <h3>A 31B model does WORSE than 8B on spatial reasoning</h3>
+    <p>Gemma 4 31B-IT (60 layers, 5376 hidden) achieves only 24.5% on SpatialEval Maze-Nav. Instruction tuning biases the model toward verbose text reasoning rather than spatial pattern matching. This validates the thesis: <strong>you need architectural augmentation (the solver), not just more parameters.</strong></p>
+  </div>
+</div>
+<div class="page" id="p-t5-g4solver"><h1>Gemma 4 + Solver</h1><div class="date-stamp">April 7 · Running</div><div class="card"><h3>In progress</h3><p>Adapted SolverCore projections from 4096→5376 dim for Gemma 4. Training with bypass mode, 2000 steps. If this works, the solver is a general-purpose module that works across frozen LLMs.</p></div></div>
+
+</div><!-- end main -->
+
+<script src="maze_data.js"></script>
+<script>
+// === NAV ===
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tl-item').forEach(n=>n.classList.remove('active'));const p=document.getElementById('p-'+id);if(p){p.classList.add('active');p.style.animation='none';p.offsetHeight;p.style.animation='';}if(event&&event.target)event.target.classList.add('active');if(id==='t3-softbfs'){setTimeout(initMaze,100)}}
+function togTrack(el){el.parentElement.classList.toggle('collapsed')}
+
+// === FILTERS ===
+let filters={success:true,failure:true,mixed:true};
+function toggleFilter(btn,f){filters[f]=!filters[f];btn.classList.toggle('on');applyFilters()}
+function applyFilters(){document.querySelectorAll('.tl-item').forEach(el=>{const s=el.dataset.s;el.classList.toggle('hidden-item',!filters[s])})}
+function toggleBg(btn){btn.classList.toggle('on');document.body.classList.toggle('no-bg')}
+
+// === MAZE VIZ ===
+const COL={0:'#0a0e14',1:'#1a1a2e',2:'#4a5568',3:'#2563eb',4:'#dc2626',5:'#22543d'};
+let mzTimer=null,mzCurStep=0;
+
+function initMaze(){
+  if(!window.FULLCOMBO_DATA)return;
+  buildGrid('mzT',FULLCOMBO_DATA.label_grid);
+  buildGrid('mzFC',null);buildGrid('mzBL',null);
+  mzStep(0);
+}
+function buildGrid(id,data){
+  const el=document.getElementById(id);el.innerHTML='';
+  for(let r=0;r<30;r++)for(let c=0;c<30;c++){const d=document.createElement('div');d.className='c';d.style.background=data?COL[data[r][c]]||'#333':'#222';el.appendChild(d)}
+}
+function renderPred(gridId,lblId,data,step,name){
+  if(!data||!data.steps)return;
+  let s=data.steps.find(x=>x.act_step===step);if(!s)s=data.steps[data.steps.length-1];
+  const cells=document.getElementById(gridId).children;
+  const gt=data.label_grid;let ok=0,tot=0;
+  for(let r=0;r<30;r++)for(let c=0;c<30;c++){
+    const i=r*30+c,pred=s.predicted_grid[r][c],g=gt[r][c],rp=s.reachable_prob_grid[r][c];
+    let bg;
+    if(g===1)bg='#1a1a2e';else if(g===3)bg='#2563eb';else if(g===4)bg='#dc2626';
+    else if(g===5){tot++;if(pred===5){ok++;bg=`rgba(34,197,94,${.3+.7*rp})`}else bg=`rgba(248,81,73,${.3+.5*(1-rp)})`}
+    else if(g===2){bg=pred===5?`rgba(243,156,18,${.3+.5*rp})`:'#2d3748'}
+    else bg=COL[pred]||'#333';
+    cells[i].style.background=bg;
+  }
+  document.getElementById(lblId).textContent=`${name} — ${tot?((ok/tot*100).toFixed(1)):0}% reach (step ${s.act_step})`;
+}
+function mzStep(s){
+  mzCurStep=s;if(mzTimer){clearInterval(mzTimer);mzTimer=null}
+  document.querySelectorAll('.maze-ctrls button').forEach(b=>b.classList.remove('on'));
+  const b=document.getElementById('mb'+s);if(b)b.classList.add('on');
+  document.getElementById('mzSlider').value=s;
+  document.getElementById('mzInfo').textContent=`ACT Step ${s} · ${(s+1)*3} H-iterations`;
+  if(window.FULLCOMBO_DATA)renderPred('mzFC','fcL',FULLCOMBO_DATA,s,'FULL_COMBO');
+  if(window.BASELINE_DATA)renderPred('mzBL','blL',BASELINE_DATA,s,'BASELINE');
+}
+function mzPlay(){if(mzTimer){clearInterval(mzTimer);mzTimer=null;return}let s=0;mzStep(0);mzTimer=setInterval(()=>{s++;if(s>15){clearInterval(mzTimer);mzTimer=null;return}mzStep(s)},400)}
+
+window.addEventListener('load',()=>{if(window.FULLCOMBO_DATA)console.log('Maze data loaded:',FULLCOMBO_DATA.steps.length,'steps')});
+</script>
+</body>
+</html>

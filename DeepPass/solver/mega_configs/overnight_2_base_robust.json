@@ -1,0 +1,11 @@
+[
+  {"tag": "ov2_base_sg_L10_8k_s1", "task": "spatialgrid", "inject_layer": 10, "n_rounds": 5, "total_steps": 8000, "seed": 1, "grad_accum": 16},
+  {"tag": "ov2_base_sg_L10_8k_s2", "task": "spatialgrid", "inject_layer": 10, "n_rounds": 5, "total_steps": 8000, "seed": 2, "grad_accum": 16},
+  {"tag": "ov2_base_sg_L12_8k_s137", "task": "spatialgrid", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 137, "grad_accum": 16},
+  {"tag": "ov2_base_sg_L12_8k_s2024", "task": "spatialgrid", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 2024, "grad_accum": 16},
+  {"tag": "ov2_base_mz_L12_8k_s42", "task": "mazenav", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov2_base_mz_L12_8k_s7", "task": "mazenav", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 7, "grad_accum": 16},
+  {"tag": "ov2_base_mz_L12_8k_s137", "task": "mazenav", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 137, "grad_accum": 16},
+  {"tag": "ov2_base_sm_L12_8k_s42", "task": "spatialmap", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov2_base_sm_L12_8k_s7", "task": "spatialmap", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 7, "grad_accum": 16}
+]

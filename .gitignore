@@ -17,7 +17,7 @@ env/
 environment.yml
 
 # PyTorch / ML artifacts
-checkpoints/
+checkpoints*/
 *.ckpt
 *.pt
 *.pth
@@ -83,3 +83,18 @@ DeepPass/deeppass_export.zip
 # HuggingFace cache
 .cache/
 hf_cache/
+
+# DeepPass — runtime monitoring / sentinel logs
+DeepPass/monitor_log.txt
+DeepPass/sentinel_log.txt
+DeepPass/slurm_logs/
+
+# DeepPass — additional lm-eval output path (the current dir, not just lm_eval_*/)
+DeepPass/results/lm_eval/
+
+# DeepPass — embedded upstream clone (raymin0223/mixture_of_recursions)
+DeepPass/mor_baseline/
+
+# DeepPass — one-off zips / briefings that shouldn't be tracked
+DeepPass/llms-have-adhd.zip
+DeepPass/deeppass_blog_briefing.md

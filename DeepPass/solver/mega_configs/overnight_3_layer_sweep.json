@@ -1,0 +1,10 @@
+[
+  {"tag": "ov3_inst_sg_L0_8k_s7", "task": "spatialgrid", "inject_layer": 0, "n_rounds": 5, "total_steps": 8000, "seed": 7, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L4_8k_s42", "task": "spatialgrid", "inject_layer": 4, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L6_8k_s42", "task": "spatialgrid", "inject_layer": 6, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L8_8k_s42", "task": "spatialgrid", "inject_layer": 8, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L14_8k_s42", "task": "spatialgrid", "inject_layer": 14, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L16_8k_s42", "task": "spatialgrid", "inject_layer": 16, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L18_8k_s42", "task": "spatialgrid", "inject_layer": 18, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16},
+  {"tag": "ov3_inst_sg_L20_8k_s42", "task": "spatialgrid", "inject_layer": 20, "n_rounds": 5, "total_steps": 8000, "seed": 42, "grad_accum": 16}
+]

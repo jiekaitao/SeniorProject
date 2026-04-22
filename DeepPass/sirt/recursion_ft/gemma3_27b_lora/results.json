@@ -1,0 +1,33 @@
+{
+  "model": "models/full/gemma-3-27b-it",
+  "name": "gemma3_27b",
+  "core": [
+    11,
+    14
+  ],
+  "rank": 8,
+  "steps": 300,
+  "contrastive": true,
+  "baseline": {
+    "math": 0.8733264763623009,
+    "eq": 66.5967640827397,
+    "combined": 76.9647058594849
+  },
+  "pre_k2": {
+    "math": 0.879032611080061,
+    "eq": 71.18818218858175,
+    "combined": 79.54572164829392
+  },
+  "post_k1": {
+    "math": 0.8733264763623009,
+    "eq": 66.5967640827397,
+    "combined": 76.9647058594849
+  },
+  "post_k2": {
+    "math": 0.856934435108528,
+    "eq": 70.44202451149366,
+    "combined": 78.06773401117323
+  },
+  "k1_preserved": true,
+  "k2_improves": true
+}

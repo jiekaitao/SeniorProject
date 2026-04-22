@@ -159,9 +159,60 @@ All results saved as JSON. Experiment logs in `results/sbatch_*.log`.
 - **PAPER.md** (~250 lines) — Paper outline with section numbers, data paths, key tables
 - **prompts/** — Comprehensive prompts sent to GPT-5.4 Pro for screening metric design and FFN analysis
 
+## Solver Architecture (solver/)
+
+Bidirectional recursive reasoning module that bolts onto a frozen LLM. "Separate the thinker from the talker."
+
+```
+Input → Frozen LLM embeds → Solver thinks (bidirectional, K iterations) → memory tokens
+                                                                              ↓
+            Frozen LLM decoder sees: [memory tokens | full prompt] → answer
+```
+
+**Key files:**
+- `solver/model.py` — `SolverCore` (two-level z_L/z_H hierarchy, shared weights across K iterations, projects 4096↔512), `PromptSolverLLM` (complete system)
+- `solver/train_multihop.py` — K-scaling experiments on pointer chasing, variable substitution, mixed tasks
+- `solver/eval_spatialeval_v3.py` — SpatialEval benchmark eval with configurable memory slots and training steps
+- `solver/eval_spatialeval_scaled.py` — Parameterized solver width/depth ablation (12M/25M/42M/30M_deep)
+- `solver/eval_spatialeval_stable.py` — Stability-improved training (lower LR, EMA, grad accumulation, best-of-N checkpointing)
+- `solver/eval_spatialeval_gemma4.py` — Adapted for Gemma 4 31B-IT (5376-dim, hybrid sliding-window attention)
+- `solver/moerm_lite.py` — MoERM-Lite architecture (4 experts, sequence-level routing, Perceiver fusion)
+
+**SpatialEval results (NeurIPS 2024 maze navigation):**
+- Llama 3.1 8B baseline: 33.4%
+- Llama 8B + solver (mem32, best): 70.6%
+- Gemma 4 31B-IT baseline: 24.5% (scale fails at spatial reasoning)
+- Training variance is the main bottleneck: avg ~50%, best ~70% across 50+ runs
+
+**Bypass mode is critical:** decoder sees [memory + full prompt]. Without bypass (v1), solver hurts.
+
+## TRM Interpretability (/home/jietao/RR/SeniorProject/RR_Interpretability/)
+
+Analysis of Alexia's Tiny Recursive Model (7M params) on 30×30 maze solving.
+
+**Key files:**
+- `proper_eval.py` — Correct TRM evaluation with 3 bug fixes (key prefix stripping, numeric sort, vocab from checkpoint). Reference implementation for TRM loading.
+- `viz_soft_bfs.py` — Per-cell per-step visualization data for web app demo
+- `investigate_brier_mechanism.py` — 5-way ablation diagnostics (confidence, flips, Fisher, ECE)
+- `VISUALIZATIONS/` — All output data + interactive HTML dashboard
+
+**TRM checkpoint loading has 3 critical pitfalls:**
+1. Key prefix: checkpoints save `model.inner.X`, model expects `inner.X`. Fix: `{k.replace('model.', '', 1): v}`
+2. Sort order: `sorted(['step_9765', 'step_19530'])` is alphabetically wrong. Fix: `key=lambda x: int(x.split('_')[1])`
+3. Vocab size: derive from checkpoint `sd[embed_key].shape[0]`, not from data
+
+**Checkpoints:** `/blue/cis4914/jietao/SeniorProject/RR_TRM/checkpoints/SeniorProjectTRM/` — ABLATION_FULL_COMBO, ABLATION_BASELINE, ABLATION_BRIER_ONLY, ABLATION_MONO_ONLY, ABLATION_SOFTMAX_ONLY
+
+**Key findings:**
+- Overconfidence trap: BCE+StableMax → 98.5% confident, 80.6% correct, representations freeze. Brier breaks it.
+- 5-way ablation: +18.1pp synergy from Brier+monotonicity+softmax working together
+- Probe gap: model internally represents 95.3% reachability but lm_head only outputs 83.2%
+
 ## GPU Usage Rules
 
-- Account `cis4914` has 8 B200 GPUs. Always leave 2 free for group members.
+- Account `cis4914` has 8 B200 GPUs. Keep up to 5 busy for our work.
 - Check group usage: `squeue -A cis4914 -o '%u|%t' -h | grep -v jietao | grep R`
 - Monitor jobs after submission — check logs within 60-90s for errors.
+- Sentinel script at `/home/jietao/gpu_sentinel_forever.sh` maintains 5 GPU jobs. Check with `pgrep -f gpu_sentinel_forever`.
 - Set up recurring checks for long-running experiments.
+- Only use American LLMs (Meta Llama, Google Gemma — never Chinese LLMs for new experiments).

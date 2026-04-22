@@ -1,0 +1,41 @@
+{
+  "model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "name": "mistral_7b",
+  "core": [
+    27,
+    30
+  ],
+  "rank_attn": 8,
+  "rank_ffn": 4,
+  "steps": 320,
+  "warmup": 80,
+  "baseline": {
+    "math": 0.6828961554084862,
+    "eq": 55.2237577174511,
+    "combined": 61.75668662914987
+  },
+  "pre_k2": {
+    "math": 0.00401785794642869,
+    "eq": 0.0,
+    "combined": 0.2008928973214345
+  },
+  "post_k1": {
+    "math": 0.6828961554084862,
+    "eq": 55.2237577174511,
+    "combined": 61.75668662914987
+  },
+  "post_k2": {
+    "math": 0.0,
+    "eq": 0.0,
+    "combined": 0.0
+  },
+  "post_k2_whisper": {
+    "math": 0.6672683904914904,
+    "eq": 56.021977680802095,
+    "combined": 61.37440836497557
+  },
+  "k1_preserved": true,
+  "k2_improves": false,
+  "best_config": "K=2+whisper",
+  "best_delta": -0.3822782641742961
+}

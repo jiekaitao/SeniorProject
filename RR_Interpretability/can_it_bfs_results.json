@@ -1,0 +1,94 @@
+{
+  "trm_mlp_probe": {
+    "ABLATION_BASELINE": {
+      "h_cycle_0": {
+        "mlp_probe_acc": 0.8749777674674988,
+        "per_label": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.0
+        }
+      },
+      "h_cycle_1": {
+        "mlp_probe_acc": 0.8749777674674988,
+        "per_label": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.0
+        }
+      },
+      "h_cycle_2": {
+        "mlp_probe_acc": 0.8749777674674988,
+        "per_label": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.0
+        }
+      }
+    },
+    "ABLATION_FULL_COMBO": {
+      "h_cycle_0": {
+        "mlp_probe_acc": 0.8749777674674988,
+        "per_label": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.0
+        }
+      },
+      "h_cycle_1": {
+        "mlp_probe_acc": 0.8749777674674988,
+        "per_label": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.0
+        }
+      },
+      "h_cycle_2": {
+        "mlp_probe_acc": 0.8749777674674988,
+        "per_label": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.0
+        }
+      }
+    }
+  },
+  "solver_reachability": {
+    "1": {
+      "cell_accuracy": 0.7694444444444445,
+      "reachable_accuracy": 0.9038297872340425,
+      "unreachable_accuracy": 0.5168,
+      "perfect_grid_rate": 0.02
+    },
+    "2": {
+      "cell_accuracy": 0.7666666666666667,
+      "reachable_accuracy": 0.9284452296819788,
+      "unreachable_accuracy": 0.49251497005988026,
+      "perfect_grid_rate": 0.0
+    },
+    "4": {
+      "cell_accuracy": 0.7705555555555555,
+      "reachable_accuracy": 0.9455894476504534,
+      "unreachable_accuracy": 0.4088586030664395,
+      "perfect_grid_rate": 0.0
+    },
+    "8": {
+      "cell_accuracy": 0.7583333333333333,
+      "reachable_accuracy": 0.9584690553745928,
+      "unreachable_accuracy": 0.32867132867132864,
+      "perfect_grid_rate": 0.0
+    }
+  }
+}

@@ -2522,3 +2522,185 @@ Full spectral screening pipeline on Meta's LLaMA 3 70B Instruct (80 layers, dens
 - Early+mid blocks are generally best (LLaMA: 8-15, Gemma3: 0-13)
 - Late blocks can complement early ones (LLaMA: 61-62, Gemma3: 47-48)
 - SBUID screening works on full-attention models (Qwen2, LLaMA 3) but not sliding window (Gemma3)
+
+---
+
+## 40. KV Cache Fix — SOLVED (2026-03-28)
+
+**The long-standing KV cache problem is fixed.** Duplicated layers now work with `use_cache=True`.
+
+### The Problem
+
+Shared layer modules have the same `layer_idx` → both write to the same KV cache slot → the duplicate overwrites the original's cached key/values → corrupted generation.
+
+### The Fix: LayerIdxWrapper
+
+A thin wrapper module that temporarily swaps `layer_idx` to a unique value during the forward pass, then restores it afterward:
+
+```python
+class LayerIdxWrapper(nn.Module):
+    def __init__(self, layer, new_layer_idx):
+        super().__init__()
+        self.layer = layer
+        self.new_layer_idx = new_layer_idx
+        self.original_layer_idx = layer.layer_idx
+
+    def forward(self, *args, **kwargs):
+        self.layer.layer_idx = self.new_layer_idx
+        self.layer.self_attn.layer_idx = self.new_layer_idx
+        try:
+            return self.layer(*args, **kwargs)
+        finally:
+            self.layer.layer_idx = self.original_layer_idx
+            self.layer.self_attn.layer_idx = self.original_layer_idx
+```
+
+Only duplicate copies are wrapped. Originals get their `layer_idx` patched directly (safe since they're unique). Weights remain shared — zero extra VRAM.
+
+### Test Results (Gemma3-27B)
+
+| Test | Result |
+|------|--------|
+| Single-block (12,13) cache | ✅ SUCCESS |
+| Multi-block triple (0,2)+(12,13)+(47,48) cache | ✅ SUCCESS |
+| Output consistency (cached vs uncached) | ✅ MATCH |
+| Math probe score with cache | **0.9439** (matches uncached) |
+| Speed: 4.5s cached vs 5.7s uncached | **1.3x speedup** |
+
+The speedup is modest on 27B (model fits in VRAM with headroom). On 70B where VRAM is tight, the cache avoids redundant recomputation and should give larger speedup.
+
+### Production Readiness
+
+With this fix, layer duplication is now production-ready:
+- ✅ KV cache works correctly
+- ✅ `model.generate()` works normally
+- ✅ Zero extra VRAM (shared weights preserved)
+- ✅ Works with multi-block duplication
+- ✅ Compatible with lm-eval's HFLM wrapper
+
+- `results/data/kv_cache_fix/results.json`
+- `scripts/experiments/kv_cache_fix_test.sh`
+
+---
+
+## 41. Paradigm Shift: Combined 5-Intervention Recipe (March 30, 2026)
+
+Implemented the GPT-5.4 Pro "paradigm shift" recipe combining:
+1. Pass-2-only OPLoRA (orthogonal projection, K=1 preserved by construction)
+2. Contrastive K=1/K=2 weighting (only learn from positive-advantage examples)
+3. Learned task gate (predicts recursion benefit from first-pass hidden states)
+4. Alpha warmup (LoRA output scales 0.05 → 1.0 over 80 steps)
+5. FFN whisper at inference (beta=0.2 on pass-2 FFN)
+
+**Key innovation:** LayerIdxWrapper now toggles LoRA ON/OFF internally during forward — correct for both training and `model.generate()` across tokens.
+
+### Results
+
+| Model | K=1 Preserved? | Best K=2 Delta | Notes |
+|-------|---------------|---------------|-------|
+| LLaMA 3 8B v1 (lr=5e-5) | +0.00 | -8.78 | LoRA over-trained, destroyed EQ-bench |
+| LLaMA 3 8B v2 (lr=5e-6) | +0.00 | -1.26 | Gentler but still no improvement |
+| Mistral 7B v1 (core [27,30)) | +0.00 | -61.56 | Wrong core — catastrophic |
+| Mistral 7B v2 (core [28,29)) | +0.00 | **+2.89** | Raw dup gives +3.50, training preserves most |
+
+**Conclusion:** Pass-2-only OPLoRA perfectly preserves K=1 every time. But LoRA training never improves beyond raw duplication — CE optimization ≠ generation quality improvement. The Mistral raw dup +3.50 on block [28,29) is the best post-hoc result.
+
+- `sirt/paradigm_shift.py`, `sirt/paradigm_lmeval.py`
+
+---
+
+## 42. K-Degradation Sweep: Why Higher K Hurts (March 30, 2026)
+
+Tested K=1,2,3,4 with three modes: full duplication, attention-only (FFN beta=0), FFN-whisper (beta=0.2).
+
+### Mistral 7B, block [28,29) — THE paper figure:
+
+| K | Full Dup | Attn-Only | Whisper | FFN Harm |
+|---|----------|-----------|---------|----------|
+| 1 | 61.76 | — | — | — |
+| 2 | 65.26 (+3.50) | 61.43 (-0.33) | 63.49 (+1.73) | +3.83 |
+| 3 | 48.10 (-13.66) | 61.23 (-0.52) | 60.80 (-0.96) | -13.13 |
+| 4 | 9.62 (-52.13) | 62.85 (+1.09) | 60.50 (-1.26) | -53.23 |
+
+**Key finding:** Attention-only duplication is STABLE at K=4 (+1.09). Full duplication crashes exponentially (-52.13). FFN re-retrieval causes 53 points of damage at K=4.
+
+Also measured KL divergence and entropy delta at each K:
+- KL: 0.64 (K=2), 3.99 (K=3), 5.80 (K=4) — representation diverges
+- Entropy: +3.37 (K=2), +7.49 (K=3), +7.71 (K=4) — model becomes more uncertain
+
+- `sirt/k_degradation_sweep.py`
+- `results/data/k_degradation/mistral_7b/results.json`
+
+---
+
+## 43. PSRT: Projected Split-State Recurrent Transformer (March 30, 2026)
+
+Novel architecture: memory frozen inside recurrent loop, only reasoning iterates.
+
+### Architecture
+```
+Embedding → Prelude → proj_m(h)=m₀, proj_r(h)=r₀
+→ Core × K: r = (1-α)r + α(Core(r+m₀) - m₀)
+→ Combine([m₀, r]) → Coda → LM Head
+```
+
+172M params: d=1024, 10 blocks (2 prelude + 3 core + 5 coda), GPT-2 tokenizer.
+
+### PSRT v1 (fineweb-edu only)
+| Step | Phase | PPL K=1 | PPL K=2 | Delta |
+|------|-------|---------|---------|-------|
+| 2000 | P1 | 780.73 | 801.56 | +20.83 |
+| 10000 | P1 | 357.90 | 379.44 | +21.54 |
+| 12000 | P2 | 322.50 | 321.86 | **-0.64** ← crossover |
+| 14000 | P2 | 296.75 | 295.71 | **-1.05** |
+| 16000 | P3 | 284.81 | 283.90 | **-0.92** |
+
+Phase 3: E[K] collapsed to 1.0 — fineweb-edu too easy, model learned "never recurse."
+
+### PSRT v2 (50% general + 25% math + 25% science)
+| Step | Phase | PPL K=1 | PPL K=2 | Delta |
+|------|-------|---------|---------|-------|
+| 2000 | P1 | 817.58 | 830.64 | +13.06 |
+| 8000 | P1 | 422.47 | 440.97 | +18.50 |
+| 10000 | P2 | 380.06 | 377.89 | **-2.17** ← faster crossover! |
+| 12000 | P2 | 348.79 | 346.66 | **-2.13** |
+
+v2 crosses over at step 10000 (vs 12000 for v1) with 3x larger benefit (-2.17 vs -0.64). Harder data makes the model learn recursion faster.
+
+- `psrt/model.py`, `psrt/train.py`, `psrt/train_v2.py`
+
+---
+
+## 44. LLM-to-TRM Conversion (March 30, 2026)
+
+Surgically add memory/reasoning projections to a pre-trained model:
+- proj_m, proj_r (d×d each), combine (2d×d) — ~67M trainable params on 8B model
+- Freeze ALL base weights, train only projections for 500 steps
+
+### Results
+
+| Model | Pre-ft K=2 | Post-ft K=2 | Swing |
+|-------|-----------|-------------|-------|
+| LLaMA 3 8B [10,13) | -1.14 | -14.61 | -13.47 (worse) |
+| **Mistral 7B [28,29)** | -1.57 | **+0.33** | **+1.90 (improved!)** |
+
+Mistral TRM conversion works: K=2 went from -1.57 to +0.33 in 14 seconds of training. First positive K=2 result from a trained intervention on a pre-trained model.
+
+- `sirt/llm_to_trm.py`
+
+---
+
+## 45. Reasoning Probe: Trick Questions (March 30, 2026)
+
+12 trick questions (car wash, bat+ball, lily pad, surgeon riddle, etc.) testing prompt duplication vs layer duplication.
+
+| Config | Mistral 7B | LLaMA 3 8B |
+|--------|-----------|------------|
+| K=1 baseline | 75.0% | 62.5% |
+| Prompt dup | 66.7% (-8.3) | 58.3% (-4.2) |
+| Layer dup K=2 | 62.5% (-12.5) | 66.7% (+4.2) |
+| Layer dup K=3 | 62.5% (-12.5) | 62.5% (0.0) |
+
+Mixed results: LLaMA K=2 improved +4.2%, Mistral K=2 hurt -12.5%. Model-dependent. Car wash wrong on all configs — 7B models lack the knowledge.
+
+- `sirt/reasoning_probe.py`

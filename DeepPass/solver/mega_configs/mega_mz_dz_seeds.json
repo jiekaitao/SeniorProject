@@ -1,0 +1,128 @@
+[
+  {
+    "tag": "megaInst_mz_dz_L17_seed7",
+    "task": "mazenav",
+    "inject_layer": 17,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L17_seed137",
+    "task": "mazenav",
+    "inject_layer": 17,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L18_seed7",
+    "task": "mazenav",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L18_seed137",
+    "task": "mazenav",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L19_seed7",
+    "task": "mazenav",
+    "inject_layer": 19,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L19_seed137",
+    "task": "mazenav",
+    "inject_layer": 19,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L20_seed7",
+    "task": "mazenav",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L20_seed137",
+    "task": "mazenav",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L21_seed7",
+    "task": "mazenav",
+    "inject_layer": 21,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L21_seed137",
+    "task": "mazenav",
+    "inject_layer": 21,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L22_seed7",
+    "task": "mazenav",
+    "inject_layer": 22,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L22_seed137",
+    "task": "mazenav",
+    "inject_layer": 22,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L23_seed7",
+    "task": "mazenav",
+    "inject_layer": 23,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_dz_L23_seed137",
+    "task": "mazenav",
+    "inject_layer": 23,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 137,
+    "grad_accum": 16
+  }
+]

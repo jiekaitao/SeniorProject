@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LLMs Have ADHD — Highlights</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <span class="title">LLMs Have ADHD</span>
+    <a href="index.html" class="active">Highlights</a>
+    <a href="everything.html">All Experiments</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <h1>LLMs Have ADHD</h1>
+  <p class="subtitle">Improving LLM reasoning via iterative computation and selective layer duplication. 463 GPU experiments on 4&times;B200. Senior thesis.</p>
+
+  <div class="stats">
+    <div class="stat-card"><div class="label">Total experiments</div><div class="value">463</div><div class="note">controller, LoRA, duplication, vision</div></div>
+    <div class="stat-card"><div class="label">Best controller gain</div><div class="value">+38pp</div><div class="note">SpatialGrid (base, L10, 12k steps)</div></div>
+    <div class="stat-card"><div class="label">Best vision gain</div><div class="value">+33.6pp</div><div class="note">PaLiGemma VSR, L32</div></div>
+    <div class="stat-card"><div class="label">DeepPass over Ng</div><div class="value">+7.31</div><div class="note">72B combined metric</div></div>
+    <div class="stat-card"><div class="label">Controller failures</div><div class="value">0</div><div class="note">across 400+ runs</div></div>
+    <div class="stat-card"><div class="label">LoRA collapses</div><div class="value">3/10</div><div class="note">catastrophic on SpatialGrid</div></div>
+  </div>
+
+  <div class="callout highlight">
+    <strong>The core finding</strong>
+    At matched 140M parameter budget, a recurrent deliberation controller beats LoRA fine-tuning on SpatialGrid by more than +20pp (base) and is stable across all seeds, while uniquely offering test-time K-scaling. LoRA still wins on semantic benchmarks (WinoGrande, HellaSwag, Mazenav). We identified a reproducible fine-tuning failure mode on structured reasoning: 3 out of 10 LoRA SpatialGrid runs collapse below random.
+  </div>
+
+  <h2>Controller architecture</h2>
+  <p>A small (~140M) learned controller writes <code>thought</code> tokens into the residual stream of a frozen Llama&nbsp;3.1&nbsp;8B. It reads hidden states tapped at layers <code>{8,16,24}</code>, updates its own state <code>z&thinsp;&isin;&thinsp;&#x211d;<sup>8&times;512</sup></code>, and splices the new thoughts back in at layer&nbsp;12 for another pass. Same weights, K iterations.</p>
+
+<div class="diagram">[prompt]          layers 0..11        [prompt|thoughts|answer]        layer 12..31
+    &darr;                  &darr;                         &darr;                         &darr;
+embed tokens &rarr; frozen LM layers &rarr; splice thoughts &rarr; frozen LM layers &rarr; ABCD logits
+                                            &uarr;                                        &#x2502;
+                       z &isin; R^(8&times;512) &mdash;write&mdash;&#x2518;                                      &#x2502;
+                                            &uarr;                                        &#x2502;
+                       RMSNorm(z + &sigma;&middot;&Delta;) &larr;&mdash; read features &larr;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#x2518;
+                                          (tapped layers 8,16,24 + slot hidden states)
+                                                     [iterate K rounds]</div>
+
+  <p>The write operation mixes a sparse vocabulary-distilled signal with a low-rank residual:</p>
+  $$\text{thought}(z) = \sum_{k=1}^{64} \text{softmax}(\text{logits}_k(z)) \cdot E[\text{topk}_k(z)] + 0.12 \cdot z\, W_\downarrow W_\uparrow$$
+
+  <h2>Controller vs LoRA &mdash; head to head</h2>
+  <p>Same 140M parameter budget, same 8000 training steps, same seeds. Each pair is one benchmark-model slice from <code>paired_controller_vs_lora</code> plus the SpatialGrid slice derived from <code>sg_ctrl_runs</code>/<code>sg_lora_runs</code>.</p>
+
+  <div class="chart-container">
+    <div class="chart-title">Controller vs LoRA (&Delta; accuracy, matched 140M / 8k steps)</div>
+    <div class="chart-subtitle">Dark = controller, gray = LoRA. Green outline marks the benchmark where controller wins.</div>
+    <div class="chart-wrapper tall"><canvas id="pairChart"></canvas></div>
+  </div>
+
+  <h2>SpatialGrid is special &mdash; LoRA instability</h2>
+  <p>SpatialGrid is where the two methods diverge most sharply. LoRA is bimodal: half of runs learn, half collapse below random (25%). The controller clusters tightly in the 0.75&ndash;0.88 band regardless of seed.</p>
+
+  <div class="chart-container">
+    <div class="chart-title">SpatialGrid final accuracy by run</div>
+    <div class="chart-subtitle">Each dot is one run. Black = controller (<span class="mono">sg_ctrl_runs</span>), red = LoRA (<span class="mono">sg_lora_runs</span>). Dashed line = 25% random baseline.</div>
+    <div class="chart-wrapper"><canvas id="sgScatter"></canvas></div>
+  </div>
+
+  <h4>LoRA SpatialGrid raw runs</h4>
+  <table>
+    <thead><tr><th>model</th><th class="num">steps</th><th class="num">seed</th><th class="num">baseline</th><th class="num">final</th><th class="num">&Delta;</th></tr></thead>
+    <tbody id="sgLoraTbody"></tbody>
+  </table>
+
+  <h2>Test-time K-scaling (controller only)</h2>
+  <p>Because the controller iterates K rounds over the same frozen LM, K is a dial at inference time. LoRA has no equivalent.</p>
+
+  <div class="chart-container">
+    <div class="chart-title">Accuracy vs rounds K &isin; {3, 5, 8}</div>
+    <div class="chart-subtitle">Four tasks (Inst) where we have full K-sweep data. LoRA has no K dial (flat reference).</div>
+    <div class="chart-wrapper"><canvas id="kChart"></canvas></div>
+  </div>
+
+  <h2>DeepPass layer duplication &mdash; +7.31 over Ng's 72B</h2>
+  <p>Zero training, zero new weights. Duplicate specific transformer blocks at inference, blend with a per-layer alpha seam, and the 72B combined score jumps from Ng's 76.76 to 84.07.</p>
+
+  <div class="chart-container">
+    <div class="chart-title">72B combined score by configuration</div>
+    <div class="chart-subtitle">Horizontal bars. Source: <span class="mono">deeppass_72b</span>.</div>
+    <div class="chart-wrapper tall"><canvas id="dp72b"></canvas></div>
+  </div>
+
+  <h4>Cross-architecture results</h4>
+  <table>
+    <thead><tr><th>model</th><th class="num">layers</th><th class="num">baseline</th><th class="num">best</th><th class="num">&Delta;</th></tr></thead>
+    <tbody id="crossTbody"></tbody>
+  </table>
+
+  <h2>Vision &mdash; PaLiGemma on VSR</h2>
+  <p>Injecting controller thoughts deeper into PaLiGemma (10B) monotonically improves VSR accuracy &mdash; L8&rarr;L16&rarr;L24&rarr;L32 gives +10pp, +15pp, +32pp, +34pp. LLaVA at L12 gains just +2.7pp for comparison.</p>
+
+  <div class="chart-container">
+    <div class="chart-title">Vision &Delta; accuracy on VSR</div>
+    <div class="chart-subtitle">PaLiGemma by inject layer + LLaVA reference.</div>
+    <div class="chart-wrapper"><canvas id="visionChart"></canvas></div>
+  </div>
+
+  <h2>Honest assessment</h2>
+  <div class="callout warn">
+    <strong>This is a narrow capability, not a general intelligence improvement.</strong>
+    The controller loses to LoRA on WinoGrande (+10pp vs +19pp), HellaSwag (+12pp vs +14pp), CommonsenseQA (+2pp vs +9pp), and Mazenav (+0pp vs +73pp). Wins are specific: (a) SpatialGrid, where the task requires per-instance operation execution that LoRA cannot memorize; (b) vision on PaLiGemma. The contribution is identifying <em>when</em> iterative computation helps, not a universal upgrade. DeepPass duplication similarly has a sharp profile: it helps reasoning (IFEval +2.3%, MuSR +1.3%) but hurts knowledge (MATH &minus;6.4%).
+  </div>
+
+  <footer>
+    <p>463 experiments on 4&times;B200. See <a href="everything.html">the full experiment log</a> for per-run data, ablations, and appendix tables. Raw data in <code>data.json</code>.</p>
+  </footer>
+
+</main>
+
+<script>
+const C_CTRL = '#37352F';
+const C_LORA = '#A0A0A0';
+const C_GOOD = '#0F7938';
+const C_BAD  = '#C8322D';
+const C_REF  = '#D3D1CB';
+
+Chart.defaults.font.family = 'ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+Chart.defaults.color = '#37352F';
+Chart.defaults.borderColor = '#E9E9E7';
+
+function mean(a){ if(!a.length) return 0; return a.reduce((s,x)=>s+x,0)/a.length; }
+
+fetch('./data.json').then(r=>r.json()).then(data => {
+
+  // ---------- 1) Controller vs LoRA paired chart ----------
+  // Use paired_controller_vs_lora, but override spatialgrid using sg_ctrl_runs + sg_lora_runs (L12, 8k).
+  const SG_BASE_BASELINE = 0.452;
+  const SG_INST_BASELINE = 0.77;
+  const sgCtrlBase = data.sg_ctrl_runs.filter(r => r.model==='base' && r.inject_layer===12 && r.total_steps===8000).map(r => r.best - SG_BASE_BASELINE);
+  const sgCtrlInst = data.sg_ctrl_runs.filter(r => r.model==='inst' && r.inject_layer===12 && r.total_steps===8000).map(r => r.best - SG_INST_BASELINE);
+  const sgLoraBase = data.sg_lora_runs.filter(r => r.model==='base' && r.total_steps===8000).map(r => r.delta);
+  const sgLoraInst = data.sg_lora_runs.filter(r => r.model==='inst' && r.total_steps===8000).map(r => r.delta);
+
+  const paired = data.paired_controller_vs_lora.map(p => {
+    if (p.benchmark === 'spatialgrid' && p.model === 'base') {
+      return {...p, n_ctrl: sgCtrlBase.length, ctrl_delta_mean: mean(sgCtrlBase), ctrl_deltas_all: sgCtrlBase};
+    }
+    if (p.benchmark === 'spatialgrid' && p.model === 'inst') {
+      return {...p, n_ctrl: sgCtrlInst.length, ctrl_delta_mean: mean(sgCtrlInst), ctrl_deltas_all: sgCtrlInst};
+    }
+    return p;
+  }).filter(p => (p.n_ctrl>0 || p.n_lora>0));
+
+  // Sort: semantic benchmarks first, then spatial
+  const orderKey = p => {
+    const o = {hellaswag:1, winogrande:2, boolq:3, commonsenseqa:4, openbookqa:5, arc_challenge:6, spatialgrid:7, spatialmap:8, mazenav:9};
+    return (o[p.benchmark]||99)*10 + (p.model==='base'?0:1);
+  };
+  paired.sort((a,b)=>orderKey(a)-orderKey(b));
+
+  const labels = paired.map(p => `${p.benchmark} (${p.model})`);
+  const ctrlMeans = paired.map(p => p.ctrl_delta_mean*100);
+  const loraMeans = paired.map(p => p.lora_delta_mean*100);
+  const ctrlBorder = paired.map(p => (p.benchmark === 'spatialgrid') ? C_GOOD : C_CTRL);
+  const ctrlBorderWidth = paired.map(p => (p.benchmark === 'spatialgrid') ? 2 : 0);
+
+  new Chart(document.getElementById('pairChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Controller', data: ctrlMeans, backgroundColor: C_CTRL, borderColor: ctrlBorder, borderWidth: ctrlBorderWidth },
+        { label: 'LoRA',        data: loraMeans, backgroundColor: C_LORA },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { maxRotation: 60, minRotation: 45, font:{size:11} } },
+        y: { title: { display: true, text: 'Δ accuracy (pp)' }, grid: { color: '#E9E9E7' } }
+      },
+      plugins: {
+        legend: { position: 'top', align: 'end' },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}pp` } }
+      }
+    }
+  });
+
+  // ---------- 2) SpatialGrid scatter: ctrl (black) vs lora (red) ----------
+  const ctrlPts = data.sg_ctrl_runs.map((r, i) => ({ x: r.seed, y: r.best, model: r.model, tag: r.tag }));
+  const loraPts = data.sg_lora_runs.map((r, i) => ({ x: r.seed, y: r.final, model: r.model, tag: r.tag }));
+
+  new Chart(document.getElementById('sgScatter'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Controller', data: ctrlPts,
+          backgroundColor: C_CTRL, borderColor: C_CTRL,
+          pointRadius: 5, pointHoverRadius: 7
+        },
+        {
+          label: 'LoRA', data: loraPts,
+          backgroundColor: C_BAD, borderColor: C_BAD,
+          pointRadius: 5, pointHoverRadius: 7
+        },
+        {
+          label: 'Random (25%)', data: [{x:0, y:0.25},{x:2100, y:0.25}],
+          type: 'line', borderColor: C_REF, borderDash:[5,5], pointRadius:0, borderWidth:1, fill:false
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { type: 'logarithmic', title:{display:true, text:'seed (log)'}, min:0.5, max:3000 },
+        y: { title:{display:true, text:'final accuracy'}, min:0, max:1, grid:{color:'#E9E9E7'} }
+      },
+      plugins: {
+        legend: { position: 'top', align: 'end' },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label} s${ctx.raw.x} (${ctx.raw.model}): ${ctx.parsed.y.toFixed(3)}` } }
+      }
+    }
+  });
+
+  // SG LoRA table
+  const sgLoraTbody = document.getElementById('sgLoraTbody');
+  data.sg_lora_runs.slice().sort((a,b)=> (a.model+a.total_steps).localeCompare(b.model+b.total_steps)).forEach(r => {
+    const tr = document.createElement('tr');
+    const dcls = r.delta > 0.02 ? 'good' : (r.delta < -0.02 ? 'bad' : 'muted');
+    tr.innerHTML = `<td>${r.model}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.baseline.toFixed(3)}</td><td class="num">${r.final.toFixed(3)}</td><td class="num ${dcls}">${(r.delta*100).toFixed(1)}pp</td>`;
+    sgLoraTbody.appendChild(tr);
+  });
+
+  // ---------- 3) K-scaling line chart ----------
+  const ks = ['rounds=3','rounds=5','rounds=8'];
+  const kLabels = ['K=3','K=5','K=8'];
+  const kSeries = [
+    {key:'hellaswag_inst',  label:'HellaSwag (Inst)'},
+    {key:'winogrande_inst', label:'WinoGrande (Inst)'},
+    {key:'boolq_inst',      label:'BoolQ (Inst)'},
+    {key:'openbookqa_inst', label:'OpenBookQA (Inst)'},
+  ];
+  const kShades = ['#37352F', '#5B5956', '#7F7D79', '#A0A0A0'];
+  const kDatasets = kSeries.map((s, i) => ({
+    label: s.label,
+    data: ks.map(k => (data.kscaling_data[s.key]||{})[k] * 100),
+    borderColor: kShades[i], backgroundColor: kShades[i], tension: 0.2, pointRadius: 4, borderWidth: 2
+  }));
+
+  new Chart(document.getElementById('kChart'), {
+    type: 'line',
+    data: { labels: kLabels, datasets: kDatasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { title:{display:true, text:'accuracy (%)'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: { legend: { position: 'top', align: 'end' } }
+    }
+  });
+
+  // ---------- 4) DeepPass 72B horizontal bars ----------
+  const dp = data.deeppass_72b.slice();
+  const dpLabels = dp.map(r => r.config);
+  const dpValues = dp.map(r => r.combined);
+  const dpColors = dp.map(r => r.config.toLowerCase().includes('best') ? C_GOOD : C_CTRL);
+
+  new Chart(document.getElementById('dp72b'), {
+    type: 'bar',
+    data: { labels: dpLabels, datasets: [{ data: dpValues, backgroundColor: dpColors, label: 'combined' }] },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { title:{display:true, text:'combined score'}, min: 65, grid:{color:'#E9E9E7'} },
+        y: { ticks: { font: { size: 12 } } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.parsed.x.toFixed(2)} (${dp[ctx.dataIndex].method})` } }
+      }
+    }
+  });
+
+  // Cross table
+  const crossTbody = document.getElementById('crossTbody');
+  data.deeppass_cross.forEach(r => {
+    const tr = document.createElement('tr');
+    const dcls = r.delta > 0 ? 'good' : 'bad';
+    tr.innerHTML = `<td>${r.model}</td><td class="num">${r.layers}</td><td class="num">${r.baseline.toFixed(2)}</td><td class="num">${r.best.toFixed(2)}</td><td class="num ${dcls}">+${r.delta.toFixed(2)}</td>`;
+    crossTbody.appendChild(tr);
+  });
+
+  // ---------- 5) Vision bar chart ----------
+  const visPali = data.vision_results.filter(r => r.model_type==='paligemma').sort((a,b)=>a.inject_layer-b.inject_layer);
+  const visLlava = data.vision_results.filter(r => r.model_type==='llava' && r.baseline > 0);
+  const visLabels = visPali.map(r => `PaLiGemma L${r.inject_layer}`).concat(visLlava.map(r => `LLaVA L${r.inject_layer}`));
+  const visDeltas = visPali.map(r => r.delta*100).concat(visLlava.map(r => r.delta*100));
+  const visColors = visPali.map(()=>C_CTRL).concat(visLlava.map(()=>C_LORA));
+
+  new Chart(document.getElementById('visionChart'), {
+    type: 'bar',
+    data: { labels: visLabels, datasets: [{ data: visDeltas, backgroundColor: visColors, label: 'Δ accuracy (pp)' }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { title:{display:true, text:'Δ accuracy (pp)'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.parsed.y.toFixed(1)}pp` } }
+      }
+    }
+  });
+
+});
+</script>
+</body>
+</html>

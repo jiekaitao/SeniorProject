@@ -1,0 +1,110 @@
+[
+  {
+    "tag": "megaInst_dead_L18_seed42",
+    "task": "mazenav",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_dead_L18_seed7",
+    "task": "mazenav",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_dead_L20_seed42",
+    "task": "mazenav",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_dead_L20_seed7",
+    "task": "mazenav",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_dead_L22_seed42",
+    "task": "mazenav",
+    "inject_layer": 22,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_dead_L22_seed7",
+    "task": "mazenav",
+    "inject_layer": 22,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaBase_dead_L18_seed42",
+    "task": "mazenav",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaBase_dead_L18_seed7",
+    "task": "mazenav",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaBase_dead_L20_seed42",
+    "task": "mazenav",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaBase_dead_L20_seed7",
+    "task": "mazenav",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaBase_dead_L22_seed42",
+    "task": "mazenav",
+    "inject_layer": 22,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaBase_dead_L22_seed7",
+    "task": "mazenav",
+    "inject_layer": 22,
+    "n_rounds": 3,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  }
+]

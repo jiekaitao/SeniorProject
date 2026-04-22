@@ -1,0 +1,6 @@
+[
+  {"tag": "rfl3c5_inst_mz_L10_8k_s100", "task": "mazenav", "inject_layer": 10, "n_rounds": 5, "total_steps": 8000, "seed": 100, "grad_accum": 16},
+  {"tag": "rfl3c5_inst_mz_L14_8k_s200", "task": "mazenav", "inject_layer": 14, "n_rounds": 5, "total_steps": 8000, "seed": 200, "grad_accum": 16},
+  {"tag": "rfl3c5_inst_sm_L12_8k_s100", "task": "spatialmap", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 100, "grad_accum": 16},
+  {"tag": "rfl3c5_inst_sm_L12_8k_s200", "task": "spatialmap", "inject_layer": 12, "n_rounds": 5, "total_steps": 8000, "seed": 200, "grad_accum": 16}
+]

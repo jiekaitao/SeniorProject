@@ -1,0 +1,9 @@
+[
+  {"tag": "megaInst_sr_L10_seed42", "task": "spatialreal", "inject_layer": 10, "n_rounds": 3, "total_steps": 2000, "seed": 42, "grad_accum": 16},
+  {"tag": "megaInst_sr_L10_seed7", "task": "spatialreal", "inject_layer": 10, "n_rounds": 3, "total_steps": 2000, "seed": 7, "grad_accum": 16},
+  {"tag": "megaInst_sr_L6_seed42", "task": "spatialreal", "inject_layer": 6, "n_rounds": 3, "total_steps": 2000, "seed": 42, "grad_accum": 16},
+  {"tag": "megaInst_sr_L6_seed7", "task": "spatialreal", "inject_layer": 6, "n_rounds": 3, "total_steps": 2000, "seed": 7, "grad_accum": 16},
+  {"tag": "megaInst_sr_L2_seed42", "task": "spatialreal", "inject_layer": 2, "n_rounds": 3, "total_steps": 2000, "seed": 42, "grad_accum": 16},
+  {"tag": "megaInst_sr_L2_seed7", "task": "spatialreal", "inject_layer": 2, "n_rounds": 3, "total_steps": 2000, "seed": 7, "grad_accum": 16},
+  {"tag": "megaInst_sr_L0_seed42", "task": "spatialreal", "inject_layer": 0, "n_rounds": 3, "total_steps": 2000, "seed": 42, "grad_accum": 16}
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "tag": "megaInst_deadzone_sg_L16_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 16,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_deadzone_sg_L17_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 17,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_deadzone_sg_L18_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 18,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_deadzone_sg_L19_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 19,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_deadzone_sg_L20_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 20,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_deadzone_sg_L21_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 21,
+    "n_rounds": 3,
+    "total_steps": 2000,
+    "seed": 42,
+    "grad_accum": 16
+  }
+]

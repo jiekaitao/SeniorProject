@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LLMs Have ADHD — All Experiments</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <span class="title">LLMs Have ADHD</span>
+    <a href="index.html">Highlights</a>
+    <a href="everything.html" class="active">All Experiments</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <h1>All Experiments</h1>
+  <p class="subtitle">Complete log across 463 GPU experiments: controller, LoRA baseline, SpatialEval sweep, DeepPass layer duplication, vision. Raw data in <code>data.json</code>.</p>
+
+  <div class="toc">
+    <h4>Contents</h4>
+    <ul>
+      <li>1. <a href="#totals">Experimental totals</a></li>
+      <li>2. <a href="#trackA">Track A: DeepPass layer duplication</a></li>
+      <li>3. <a href="#trackB">Track B: recurrent deliberation controller</a></li>
+      <li>4. <a href="#ablations">Controller ablations (layer, step, seed)</a></li>
+      <li>5. <a href="#loravsctrl">LoRA vs controller &mdash; full comparison</a></li>
+      <li>6. <a href="#spatial">SpatialEval (402 runs + 14 LoRA)</a></li>
+      <li>7. <a href="#standard">Standard benchmarks</a></li>
+      <li>8. <a href="#vision">Vision</a></li>
+      <li>9. <a href="#appendix">Raw data appendix</a></li>
+    </ul>
+  </div>
+
+  <h2 id="totals">1. Experimental totals</h2>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Total</div><div class="value" id="stTotal">&nbsp;</div><div class="note">runs</div></div>
+    <div class="stat-card"><div class="label">SpatialEval controller</div><div class="value" id="stMega">&nbsp;</div></div>
+    <div class="stat-card"><div class="label">Standard benchmarks</div><div class="value" id="stBench">&nbsp;</div></div>
+    <div class="stat-card"><div class="label">LoRA baselines</div><div class="value" id="stLora">&nbsp;</div><div class="note">incl. SpatialEval</div></div>
+    <div class="stat-card"><div class="label">SpatialEval LoRA</div><div class="value" id="stLoraSpatial">&nbsp;</div></div>
+    <div class="stat-card"><div class="label">Vision</div><div class="value" id="stVision">&nbsp;</div></div>
+  </div>
+
+  <h2 id="trackA">2. Track A: DeepPass layer duplication</h2>
+  <p>Build on David Ng's RYS (Repeat Your Self): duplicate specific transformer blocks at inference, blend the seam with per-layer alpha, and score climbs <strong>+7.31 over Ng's published result</strong> on Qwen2-72B. Zero training, zero new weights.</p>
+
+  <p>Candidate blocks are chosen by spectral screening. A block <code>[i,j)</code> is a good duplication target when passing hidden states through its own function again is close to a no-op <em>after</em> subtracting the one-step update direction:</p>
+  $$\rho(i,j) = \|F_{i:j}(F_{i:j}(h)) - F_{i:j}(h)\| \,/\, \|F_{i:j}(h) - h\|$$
+
+  <p>We combine this with BLOOD-impact (a gradient-based sensitivity) to rank blocks. SBUID_0 achieves Spearman r=0.515, p=0.008 on Qwen2-72B:</p>
+  $$\text{SBUID}_0 = \text{BLOOD-impact} - 6000 \cdot \rho$$
+
+  <p>The seam between a block's original output and its re-application gets a per-layer alpha blend:</p>
+  $$h_{\text{seam}} = h_1 + \sum_l \alpha_l \,(h_2^{(l)} - h_1^{(l)})$$
+
+  <h4>72B progression (Baseline &rarr; Ng &rarr; pairs &rarr; per-layer triple)</h4>
+  <div class="chart-container">
+    <div class="chart-title">Qwen2-72B combined score by configuration</div>
+    <div class="chart-subtitle">Source: <span class="mono">deeppass_72b</span>.</div>
+    <div class="chart-wrapper tall"><canvas id="dp72b"></canvas></div>
+  </div>
+
+  <h4>Depth progression (1 &rarr; 4 blocks)</h4>
+  <div class="chart-container">
+    <div class="chart-title">Combined score vs number of duplicated blocks</div>
+    <div class="chart-subtitle">Diminishing returns after depth 3 unless per-layer alpha is used.</div>
+    <div class="chart-wrapper"><canvas id="dpDepth"></canvas></div>
+  </div>
+
+  <h4>Cross-architecture</h4>
+  <table>
+    <thead><tr><th>model</th><th class="num">layers</th><th class="num">baseline</th><th class="num">best</th><th class="num">&Delta;</th></tr></thead>
+    <tbody id="crossTbody"></tbody>
+  </table>
+
+  <div class="callout">
+    <strong>FFN re-retrieval corruption</strong>
+    Duplication helps reasoning (IFEval +2.3%, MuSR +1.3%) but hurts knowledge (MATH &minus;6.4%). Sublayer analysis isolates the culprit: attention benefits from repetition (re-weighting an already-attended context), but FFN hurts because it runs key-value retrieval on a perturbed query, pulling in the wrong facts. Attention-only duplication should fix this; FFN-only duplication makes it worse.
+  </div>
+
+  <h2 id="trackB">3. Track B: recurrent deliberation controller</h2>
+  <p>A small (~140M) learned controller that writes iterative thought tokens into the residual stream of a frozen Llama&nbsp;3.1&nbsp;8B. Read from a fixed set of tapped layers, update state, splice thoughts back in, iterate K rounds, decode from the unchanged LM head.</p>
+
+<div class="diagram">[prompt]          layers 0..11        [prompt|thoughts|answer]        layer 12..31
+    &darr;                  &darr;                         &darr;                         &darr;
+embed tokens &rarr; frozen LM layers &rarr; splice thoughts &rarr; frozen LM layers &rarr; ABCD logits
+                                            &uarr;                                        &#x2502;
+                       z &isin; R^(8&times;512) &mdash;write&mdash;&#x2518;                                      &#x2502;
+                                            &uarr;                                        &#x2502;
+                       RMSNorm(z + &sigma;&middot;&Delta;) &larr;&mdash; read features &larr;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&#x2518;
+                                          (tapped layers 8,16,24 + slot hidden states)
+                                                     [iterate K rounds]</div>
+
+  <h4>Key equations</h4>
+  <p>Thought write (vocab-distilled + low-rank residual):</p>
+  $$\text{thought}(z) = \sum_{k=1}^{64} \text{softmax}(\text{logits}_k(z)) \cdot E[\text{topk}_k(z)] + 0.12 \cdot z\, W_\downarrow W_\uparrow$$
+  <p>State update:</p>
+  $$z \leftarrow \text{RMSNorm}\big(z + \sigma \cdot \text{read\_proj}(\text{features})\big)$$
+  <p>Training loss (final CE + per-round value head + anti-degeneracy margin):</p>
+  $$\mathcal{L} = \text{CE}_{\text{final}} + 0.5 \cdot \frac{1}{R}\sum_r \text{BCE}(v_r, \text{correct}_r) + 0.1 \cdot \max(0, \text{CE}_{\text{final}} - \text{CE}_{\text{first}} + 0.1)$$
+
+  <h4>Hyperparameters</h4>
+  <table class="compact">
+    <thead><tr><th>parameter</th><th>value</th></tr></thead>
+    <tbody>
+      <tr><td>base LM</td><td>Llama 3.1 8B (base / instruct), frozen</td></tr>
+      <tr><td>controller params</td><td>~140M (matched to LoRA rank 64)</td></tr>
+      <tr><td>learning rate</td><td>1e-4</td></tr>
+      <tr><td>weight decay</td><td>0.05</td></tr>
+      <tr><td>gradient accumulation</td><td>16</td></tr>
+      <tr><td>total steps (standard)</td><td>8000</td></tr>
+      <tr><td>precision</td><td>bfloat16</td></tr>
+      <tr><td>train rounds</td><td>5</td></tr>
+      <tr><td>tapped layers (read)</td><td>{8, 16, 24}</td></tr>
+      <tr><td>inject layer (write)</td><td>12</td></tr>
+      <tr><td>thought slots</td><td>8</td></tr>
+      <tr><td>low-rank residual</td><td>rank 64</td></tr>
+      <tr><td>top-k vocab in thought</td><td>64</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="ablations">4. Controller ablations</h2>
+
+  <h4>Inject layer sweep (SpatialGrid Inst, 8k steps)</h4>
+  <div class="chart-container">
+    <div class="chart-title">Mean accuracy vs inject layer</div>
+    <div class="chart-subtitle">Aggregated across available seeds. Error shown as min/max range (gray band).</div>
+    <div class="chart-wrapper"><canvas id="layerSweep"></canvas></div>
+  </div>
+
+  <h4>Training step sweep (SpatialGrid Inst, L12)</h4>
+  <div class="chart-container">
+    <div class="chart-title">Mean accuracy vs total training steps</div>
+    <div class="chart-subtitle">Aggregated across available seeds.</div>
+    <div class="chart-wrapper"><canvas id="stepSweep"></canvas></div>
+  </div>
+
+  <h4>Seed variance (SpatialGrid Inst, L12, 8k)</h4>
+  <div class="chart-container">
+    <div class="chart-title">Sorted final accuracy across seeds</div>
+    <div class="chart-subtitle">Same config, different random seeds. The band is tight (unlike LoRA).</div>
+    <div class="chart-wrapper"><canvas id="seedVar"></canvas></div>
+  </div>
+
+  <h2 id="loravsctrl">5. LoRA vs controller &mdash; full comparison</h2>
+  <p>Paired means from <code>paired_controller_vs_lora</code>, with the SpatialGrid slice recomputed from <code>sg_ctrl_runs</code> (controller L12, 8k) and <code>sg_lora_runs</code> (r64, 8k).</p>
+  <table>
+    <thead>
+      <tr><th>benchmark</th><th>model</th><th class="num">n ctrl</th><th class="num">n lora</th><th class="num">ctrl &Delta;</th><th class="num">lora &Delta;</th><th>winner</th></tr>
+    </thead>
+    <tbody id="pairTbody"></tbody>
+  </table>
+
+  <h4>Individual deltas per benchmark (strip plot)</h4>
+  <div class="chart-container">
+    <div class="chart-title">All individual deltas for paired benchmarks</div>
+    <div class="chart-subtitle">Each dot is one run. Black = controller, gray = LoRA. Jittered on x for readability.</div>
+    <div class="chart-wrapper tall"><canvas id="stripChart"></canvas></div>
+  </div>
+
+  <h2 id="spatial">6. SpatialEval (402 controller + 14 LoRA)</h2>
+  <p>The dominant chunk of the experiment budget. Four tasks: SpatialGrid, Mazenav, SpatialMap, SpatialReal. Two base models (Llama 3.1 8B base/inst). Layers 0&ndash;24, steps 1.5k&ndash;16k.</p>
+
+  <h4>Controller mean accuracy by (task, model, layer)</h4>
+  <p class="muted">Cells: mean accuracy (n) &mdash; rows are inject_layer, cols are task/model. "&mdash;" means no runs.</p>
+  <div style="overflow-x:auto;">
+    <table class="compact" id="spatialHeatmap">
+      <thead></thead><tbody></tbody>
+    </table>
+  </div>
+
+  <h4>Multi-seed statistics (n &ge; 2)</h4>
+  <table class="compact" id="spatialStats">
+    <thead><tr><th>task</th><th>model</th><th class="num">layer</th><th class="num">steps</th><th class="num">n</th><th class="num">mean</th><th class="num">std</th><th class="num">min</th><th class="num">max</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h2 id="standard">7. Standard benchmarks (controller)</h2>
+  <p>All 25 controller-only runs on HellaSwag, WinoGrande, BoolQ, CommonsenseQA, OpenBookQA, ARC-C. Sorted by benchmark then model.</p>
+  <table class="compact" id="benchTable">
+    <thead><tr><th>benchmark</th><th>model</th><th class="num">layer</th><th class="num">steps</th><th class="num">seed</th><th class="num">baseline</th><th class="num">best</th><th class="num">&Delta;</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h2 id="vision">8. Vision</h2>
+  <p>PaLiGemma L8/L16/L24/L32 on VSR shows monotonic improvement with deeper injection. LLaVA does not benefit meaningfully &mdash; needs a different architectural setup.</p>
+  <div class="chart-container">
+    <div class="chart-title">PaLiGemma on VSR &mdash; inject layer sweep</div>
+    <div class="chart-subtitle">Baseline 0.37. Best accuracy by inject layer.</div>
+    <div class="chart-wrapper"><canvas id="visionSweep"></canvas></div>
+  </div>
+  <table class="compact" id="visionTable">
+    <thead><tr><th>tag</th><th>model</th><th class="num">layer</th><th class="num">steps</th><th class="num">seed</th><th class="num">baseline</th><th class="num">best</th><th class="num">&Delta;</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h2 id="appendix">9. Raw data appendix</h2>
+
+  <details>
+    <summary>All 25 controller benchmark runs (JSON)</summary>
+    <table class="compact" id="benchAppTable">
+      <thead><tr><th>tag</th><th>benchmark</th><th>model</th><th class="num">L</th><th class="num">steps</th><th class="num">seed</th><th class="num">baseline</th><th class="num">best</th><th class="num">r=3</th><th class="num">r=5</th><th class="num">r=8</th><th class="num">&Delta;</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>All 28 LoRA baseline runs</summary>
+    <table class="compact" id="loraAppTable">
+      <thead><tr><th>tag</th><th>benchmark</th><th>model</th><th class="num">r</th><th class="num">steps</th><th class="num">seed</th><th class="num">baseline</th><th class="num">final</th><th class="num">&Delta;</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </details>
+
+  <details>
+    <summary>Top 50 SpatialEval controller runs by accuracy</summary>
+    <table class="compact" id="megaAppTable">
+      <thead><tr><th>tag</th><th>task</th><th>model</th><th class="num">L</th><th class="num">steps</th><th class="num">seed</th><th class="num">best</th><th class="num">r=3</th><th class="num">r=5</th><th class="num">r=8</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="muted">Full set (402 runs) available in <code>data.json</code>.</p>
+  </details>
+
+  <details>
+    <summary>All 14 LoRA SpatialEval runs</summary>
+    <table class="compact" id="loraSpatialAppTable">
+      <thead><tr><th>tag</th><th>task</th><th>model</th><th class="num">r</th><th class="num">steps</th><th class="num">seed</th><th class="num">baseline</th><th class="num">final</th><th class="num">&Delta;</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </details>
+
+  <footer>
+    <p><a href="index.html">&larr; Back to highlights</a> &middot; 463 experiments on 4&times;B200 &middot; Raw data: <code>data.json</code></p>
+  </footer>
+
+</main>
+
+<script>
+const C_CTRL = '#37352F';
+const C_LORA = '#A0A0A0';
+const C_GOOD = '#0F7938';
+const C_BAD  = '#C8322D';
+const C_REF  = '#D3D1CB';
+
+Chart.defaults.font.family = 'ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+Chart.defaults.color = '#37352F';
+Chart.defaults.borderColor = '#E9E9E7';
+
+function mean(a){ if(!a.length) return 0; return a.reduce((s,x)=>s+x,0)/a.length; }
+function std(a){ if(a.length<2) return 0; const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)*(x-m)))); }
+function fmt(x, d=3){ return (x==null||Number.isNaN(x))?'':Number(x).toFixed(d); }
+
+fetch('./data.json').then(r=>r.json()).then(data => {
+
+  // ---------- Totals ----------
+  document.getElementById('stTotal').textContent = data.meta.total_experiments;
+  document.getElementById('stMega').textContent  = data.meta.spatialeval_controller_runs;
+  document.getElementById('stBench').textContent = data.meta.controller_benchmark_runs;
+  document.getElementById('stLora').textContent  = data.meta.lora_baseline_runs;
+  document.getElementById('stLoraSpatial').textContent = data.meta.spatialeval_lora_runs;
+  document.getElementById('stVision').textContent = data.meta.vision_runs;
+
+  // ---------- DeepPass 72B bars ----------
+  const dp = data.deeppass_72b.slice();
+  new Chart(document.getElementById('dp72b'), {
+    type: 'bar',
+    data: {
+      labels: dp.map(r => r.config),
+      datasets: [{
+        data: dp.map(r => r.combined), label: 'combined',
+        backgroundColor: dp.map(r => r.config.toLowerCase().includes('best') ? C_GOOD : C_CTRL)
+      }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: { x: { min: 65, title:{display:true, text:'combined score'}, grid:{color:'#E9E9E7'} } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.parsed.x.toFixed(2)} (${dp[ctx.dataIndex].method})` } }
+      }
+    }
+  });
+
+  // ---------- DeepPass depth ----------
+  const depth = data.deeppass_depth.slice();
+  new Chart(document.getElementById('dpDepth'), {
+    type: 'line',
+    data: {
+      labels: depth.map(r => `depth ${r.depth} — ${r.config}`),
+      datasets: [{ data: depth.map(r => r.combined), borderColor: C_CTRL, backgroundColor: C_CTRL, tension: 0.2, pointRadius: 5 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { maxRotation: 30, minRotation: 0, font:{size:10}, callback: function(v,i){ return depth[i] ? 'd='+depth[i].depth : v; } } },
+        y: { title:{display:true, text:'combined'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${depth[ctx.dataIndex].config}: ${ctx.parsed.y.toFixed(2)}` } }
+      }
+    }
+  });
+
+  // Cross table
+  const crossTbody = document.getElementById('crossTbody');
+  data.deeppass_cross.forEach(r => {
+    const tr = document.createElement('tr');
+    const dcls = r.delta > 0 ? 'good' : 'bad';
+    tr.innerHTML = `<td>${r.model}</td><td class="num">${r.layers}</td><td class="num">${r.baseline.toFixed(2)}</td><td class="num">${r.best.toFixed(2)}</td><td class="num ${dcls}">+${r.delta.toFixed(2)}</td>`;
+    crossTbody.appendChild(tr);
+  });
+
+  // ---------- Layer sweep (SG inst 8k) ----------
+  const layerRuns = data.mega_results.filter(e => e.task==='spatialgrid' && e.model==='inst' && e.total_steps===8000);
+  const byLayer = {};
+  layerRuns.forEach(e => { (byLayer[e.inject_layer] = byLayer[e.inject_layer] || []).push(e.best); });
+  const layerKeys = Object.keys(byLayer).map(Number).sort((a,b)=>a-b);
+  const layerMeans = layerKeys.map(L => mean(byLayer[L])*100);
+  const layerMins  = layerKeys.map(L => Math.min(...byLayer[L])*100);
+  const layerMaxs  = layerKeys.map(L => Math.max(...byLayer[L])*100);
+
+  if (layerKeys.length) {
+    new Chart(document.getElementById('layerSweep'), {
+      type: 'line',
+      data: {
+        labels: layerKeys.map(L => `L${L}`),
+        datasets: [
+          { label: 'max', data: layerMaxs, borderColor: C_REF, backgroundColor: 'rgba(211,209,203,0.2)', pointRadius:0, borderWidth:1, fill:'+1' },
+          { label: 'min', data: layerMins, borderColor: C_REF, backgroundColor: 'rgba(211,209,203,0.2)', pointRadius:0, borderWidth:1, fill:false },
+          { label: 'mean', data: layerMeans, borderColor: C_CTRL, backgroundColor: C_CTRL, pointRadius: 4, tension: 0.1, borderWidth:2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: { y: { title:{display:true, text:'accuracy (%)'}, grid:{color:'#E9E9E7'} } },
+        plugins: {
+          legend: { position: 'top', align: 'end' },
+          tooltip: { callbacks: { afterBody: ctx => {
+            const i = ctx[0].dataIndex; const L = layerKeys[i]; return `n = ${byLayer[L].length}`;
+          } } }
+        }
+      }
+    });
+  } else {
+    document.getElementById('layerSweep').parentNode.innerHTML = '<p class="muted">n/a</p>';
+  }
+
+  // ---------- Step sweep (SG inst L12) ----------
+  const stepRuns = data.mega_results.filter(e => e.task==='spatialgrid' && e.model==='inst' && e.inject_layer===12);
+  const byStep = {};
+  stepRuns.forEach(e => { (byStep[e.total_steps] = byStep[e.total_steps] || []).push(e.best); });
+  const stepKeys = Object.keys(byStep).map(Number).sort((a,b)=>a-b);
+  const stepMeans = stepKeys.map(s => mean(byStep[s])*100);
+  const stepNs    = stepKeys.map(s => byStep[s].length);
+
+  new Chart(document.getElementById('stepSweep'), {
+    type: 'line',
+    data: {
+      labels: stepKeys.map(s => `${s}`),
+      datasets: [{ data: stepMeans, borderColor: C_CTRL, backgroundColor: C_CTRL, pointRadius: 5, tension: 0.1, borderWidth: 2, label: 'mean accuracy' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { title:{display:true, text:'total steps'} },
+        y: { title:{display:true, text:'accuracy (%)'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { afterBody: ctx => `n = ${stepNs[ctx[0].dataIndex]}` } }
+      }
+    }
+  });
+
+  // ---------- Seed variance (SG inst L12 8k) ----------
+  const seedRuns = data.mega_results.filter(e => e.task==='spatialgrid' && e.model==='inst' && e.inject_layer===12 && e.total_steps===8000);
+  const seedVals = seedRuns.map(e => ({x: String(e.seed), y: e.best})).sort((a,b)=>a.y-b.y);
+  new Chart(document.getElementById('seedVar'), {
+    type: 'bar',
+    data: {
+      labels: seedVals.map((_,i)=>`run ${i+1}`),
+      datasets: [{ data: seedVals.map(v => v.y*100), backgroundColor: C_CTRL, label:'best accuracy' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { min: 80, max: 90, title:{display:true, text:'accuracy (%)'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `seed ${seedVals[ctx.dataIndex].x}: ${ctx.parsed.y.toFixed(1)}%` } }
+      }
+    }
+  });
+
+  // ---------- Paired ctrl vs lora table + strip chart ----------
+  const SG_BASE = 0.452, SG_INST = 0.77;
+  const sgCtrlBase = data.sg_ctrl_runs.filter(r => r.model==='base' && r.inject_layer===12 && r.total_steps===8000).map(r => r.best - SG_BASE);
+  const sgCtrlInst = data.sg_ctrl_runs.filter(r => r.model==='inst' && r.inject_layer===12 && r.total_steps===8000).map(r => r.best - SG_INST);
+
+  const paired = data.paired_controller_vs_lora.map(p => {
+    if (p.benchmark==='spatialgrid' && p.model==='base') return {...p, n_ctrl: sgCtrlBase.length, ctrl_delta_mean: mean(sgCtrlBase), ctrl_deltas_all: sgCtrlBase};
+    if (p.benchmark==='spatialgrid' && p.model==='inst') return {...p, n_ctrl: sgCtrlInst.length, ctrl_delta_mean: mean(sgCtrlInst), ctrl_deltas_all: sgCtrlInst};
+    return p;
+  });
+
+  const pairTbody = document.getElementById('pairTbody');
+  paired.forEach(p => {
+    let winner = 'tie', wcls = 'muted';
+    if (p.n_ctrl > 0 && p.n_lora === 0) { winner = 'ctrl only'; wcls = 'muted'; }
+    else if (p.n_lora > 0 && p.n_ctrl === 0) { winner = 'lora only'; wcls = 'muted'; }
+    else {
+      const diff = p.ctrl_delta_mean - p.lora_delta_mean;
+      if (diff > 0.02) { winner = 'controller'; wcls = 'good'; }
+      else if (diff < -0.02) { winner = 'lora'; wcls = 'bad'; }
+      else { winner = 'tie'; wcls = 'muted'; }
+    }
+    const ctrlCell = p.n_ctrl > 0 ? `${(p.ctrl_delta_mean*100).toFixed(1)}pp` : '—';
+    const loraCell = p.n_lora > 0 ? `${(p.lora_delta_mean*100).toFixed(1)}pp` : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p.benchmark}</td><td>${p.model}</td><td class="num">${p.n_ctrl}</td><td class="num">${p.n_lora}</td><td class="num">${ctrlCell}</td><td class="num">${loraCell}</td><td class="${wcls}">${winner}</td>`;
+    pairTbody.appendChild(tr);
+  });
+
+  // Strip chart (deltas)
+  const stripCtrl = [];
+  const stripLora = [];
+  paired.forEach((p, i) => {
+    (p.ctrl_deltas_all || []).forEach(d => stripCtrl.push({ x: i + (Math.random()-0.5)*0.3 - 0.15, y: d*100 }));
+    (p.lora_deltas_all || []).forEach(d => stripLora.push({ x: i + (Math.random()-0.5)*0.3 + 0.15, y: d*100 }));
+  });
+  new Chart(document.getElementById('stripChart'), {
+    type: 'scatter',
+    data: {
+      datasets: [
+        { label: 'Controller', data: stripCtrl, backgroundColor: C_CTRL, borderColor: C_CTRL, pointRadius: 4 },
+        { label: 'LoRA',       data: stripLora, backgroundColor: C_LORA, borderColor: C_LORA, pointRadius: 4 },
+        { label: 'zero',       data: [{x:-0.5,y:0},{x:paired.length-0.5,y:0}], type:'line', borderColor: C_REF, borderDash:[5,5], pointRadius:0, borderWidth:1, fill:false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: {
+          min: -0.5, max: paired.length - 0.5,
+          ticks: {
+            stepSize: 1,
+            callback: v => { const i = Math.round(v); return paired[i] ? `${paired[i].benchmark}\n(${paired[i].model})` : ''; },
+            autoSkip: false, maxRotation: 60, minRotation: 45, font:{size:10}
+          }
+        },
+        y: { title:{display:true, text:'Δ accuracy (pp)'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: { legend: { position: 'top', align: 'end' } }
+    }
+  });
+
+  // ---------- SpatialEval heatmap table (task/model x layer) ----------
+  const heatCol = []; // list of (task, model)
+  const tasks = ['spatialgrid','mazenav','spatialmap','spatialreal'];
+  tasks.forEach(t => { ['base','inst'].forEach(m => heatCol.push({t, m})); });
+  const agg = {};
+  data.mega_results.forEach(e => {
+    const key = `${e.task}|${e.model}|${e.inject_layer}`;
+    (agg[key] = agg[key] || []).push(e.best);
+  });
+  const allLayers = [...new Set(data.mega_results.map(e => e.inject_layer))].sort((a,b)=>a-b);
+
+  const heatTable = document.getElementById('spatialHeatmap');
+  const thead = heatTable.querySelector('thead');
+  const tbody = heatTable.querySelector('tbody');
+  let hth = '<tr><th>layer</th>' + heatCol.map(c => `<th>${c.t.replace('spatial','s.')} (${c.m})</th>`).join('') + '</tr>';
+  thead.innerHTML = hth;
+  allLayers.forEach(L => {
+    let row = `<tr><th class="num">${L}</th>`;
+    heatCol.forEach(c => {
+      const arr = agg[`${c.t}|${c.m}|${L}`];
+      if (arr && arr.length) {
+        const m = mean(arr);
+        const cls = m > 0.7 ? 'good' : (m < 0.3 ? 'bad' : '');
+        row += `<td class="num ${cls}">${(m*100).toFixed(1)} <span class="muted">(${arr.length})</span></td>`;
+      } else {
+        row += `<td class="num muted">—</td>`;
+      }
+    });
+    row += '</tr>';
+    tbody.innerHTML += row;
+  });
+
+  // Multi-seed stats n>=2
+  const agg2 = {};
+  data.mega_results.forEach(e => {
+    const key = `${e.task}|${e.model}|${e.inject_layer}|${e.total_steps}`;
+    (agg2[key] = agg2[key] || []).push(e.best);
+  });
+  const statsTbody = document.getElementById('spatialStats').querySelector('tbody');
+  const statsRows = Object.entries(agg2).filter(([k,v]) => v.length >= 2)
+    .map(([k,v]) => { const [t,m,L,s] = k.split('|'); return { t, m, L:Number(L), s:Number(s), n:v.length, mean:mean(v), std:std(v), min:Math.min(...v), max:Math.max(...v) }; })
+    .sort((a,b) => a.t.localeCompare(b.t) || a.m.localeCompare(b.m) || a.L-b.L || a.s-b.s);
+  statsRows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.t}</td><td>${r.m}</td><td class="num">${r.L}</td><td class="num">${r.s}</td><td class="num">${r.n}</td><td class="num">${(r.mean*100).toFixed(1)}</td><td class="num">${(r.std*100).toFixed(2)}</td><td class="num">${(r.min*100).toFixed(1)}</td><td class="num">${(r.max*100).toFixed(1)}</td>`;
+    statsTbody.appendChild(tr);
+  });
+
+  // ---------- Standard benchmarks table ----------
+  const benchTbody = document.getElementById('benchTable').querySelector('tbody');
+  data.bench_results.slice().sort((a,b) => a.benchmark.localeCompare(b.benchmark) || a.model.localeCompare(b.model) || a.seed - b.seed).forEach(r => {
+    const dcls = r.delta > 0.02 ? 'good' : (r.delta < -0.02 ? 'bad' : 'muted');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.benchmark}</td><td>${r.model}</td><td class="num">${r.inject_layer}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.baseline.toFixed(3)}</td><td class="num">${r.best.toFixed(3)}</td><td class="num ${dcls}">${(r.delta*100).toFixed(1)}pp</td>`;
+    benchTbody.appendChild(tr);
+  });
+
+  // ---------- Vision chart + table ----------
+  const visPali = data.vision_results.filter(r => r.model_type==='paligemma').sort((a,b)=>a.inject_layer-b.inject_layer);
+  new Chart(document.getElementById('visionSweep'), {
+    type: 'bar',
+    data: {
+      labels: visPali.map(r => `L${r.inject_layer}`),
+      datasets: [{ data: visPali.map(r => r.best*100), backgroundColor: C_CTRL, label: 'PaLiGemma best' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { title:{display:true, text:'inject layer'} },
+        y: { title:{display:true, text:'accuracy (%)'}, grid:{color:'#E9E9E7'} }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { afterLabel: ctx => `Δ = ${(visPali[ctx.dataIndex].delta*100).toFixed(1)}pp` } }
+      }
+    }
+  });
+
+  const visTbody = document.getElementById('visionTable').querySelector('tbody');
+  data.vision_results.slice().sort((a,b) => a.model_type.localeCompare(b.model_type) || a.inject_layer-b.inject_layer).forEach(r => {
+    const dcls = r.delta > 0.02 ? 'good' : (r.delta < -0.02 ? 'bad' : 'muted');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.tag}</td><td>${r.model_type}</td><td class="num">${r.inject_layer}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.baseline.toFixed(3)}</td><td class="num">${(r.best||0).toFixed(3)}</td><td class="num ${dcls}">${(r.delta*100).toFixed(1)}pp</td>`;
+    visTbody.appendChild(tr);
+  });
+
+  // ---------- Appendix tables ----------
+  const benchAppTbody = document.getElementById('benchAppTable').querySelector('tbody');
+  data.bench_results.forEach(r => {
+    const dcls = r.delta > 0.02 ? 'good' : (r.delta < -0.02 ? 'bad' : 'muted');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="mono">${r.tag}</td><td>${r.benchmark}</td><td>${r.model}</td><td class="num">${r.inject_layer}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.baseline.toFixed(3)}</td><td class="num">${r.best.toFixed(3)}</td><td class="num">${fmt(r.all_rounds['rounds=3'])}</td><td class="num">${fmt(r.all_rounds['rounds=5'])}</td><td class="num">${fmt(r.all_rounds['rounds=8'])}</td><td class="num ${dcls}">${(r.delta*100).toFixed(1)}pp</td>`;
+    benchAppTbody.appendChild(tr);
+  });
+
+  const loraAppTbody = document.getElementById('loraAppTable').querySelector('tbody');
+  data.lora_results.forEach(r => {
+    const dcls = r.delta > 0.02 ? 'good' : (r.delta < -0.02 ? 'bad' : 'muted');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="mono">${r.tag}</td><td>${r.benchmark}</td><td>${r.model}</td><td class="num">${r.lora_r}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.baseline.toFixed(3)}</td><td class="num">${r.final.toFixed(3)}</td><td class="num ${dcls}">${(r.delta*100).toFixed(1)}pp</td>`;
+    loraAppTbody.appendChild(tr);
+  });
+
+  const megaAppTbody = document.getElementById('megaAppTable').querySelector('tbody');
+  data.mega_results.slice().sort((a,b) => b.best - a.best).slice(0, 50).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="mono">${r.tag}</td><td>${r.task}</td><td>${r.model}</td><td class="num">${r.inject_layer}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.best.toFixed(3)}</td><td class="num">${fmt(r.all_rounds['rounds=3'])}</td><td class="num">${fmt(r.all_rounds['rounds=5'])}</td><td class="num">${fmt(r.all_rounds['rounds=8'])}</td>`;
+    megaAppTbody.appendChild(tr);
+  });
+
+  const loraSpatialAppTbody = document.getElementById('loraSpatialAppTable').querySelector('tbody');
+  data.lora_spatial_results.forEach(r => {
+    const dcls = r.delta > 0.02 ? 'good' : (r.delta < -0.02 ? 'bad' : 'muted');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="mono">${r.tag}</td><td>${r.task}</td><td>${r.model}</td><td class="num">${r.lora_r}</td><td class="num">${r.total_steps}</td><td class="num">${r.seed}</td><td class="num">${r.baseline.toFixed(3)}</td><td class="num">${r.final.toFixed(3)}</td><td class="num ${dcls}">${(r.delta*100).toFixed(1)}pp</td>`;
+    loraSpatialAppTbody.appendChild(tr);
+  });
+
+});
+</script>
+</body>
+</html>

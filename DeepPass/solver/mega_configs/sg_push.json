@@ -1,0 +1,5 @@
+[
+  {"tag": "sgpush_inst_L12_24k_s42", "task": "spatialgrid", "inject_layer": 12, "n_rounds": 5, "total_steps": 24000, "seed": 42, "grad_accum": 16},
+  {"tag": "sgpush_inst_L12_32k_s42", "task": "spatialgrid", "inject_layer": 12, "n_rounds": 5, "total_steps": 32000, "seed": 42, "grad_accum": 16},
+  {"tag": "sgpush_inst_L12_16k_r8", "task": "spatialgrid", "inject_layer": 12, "n_rounds": 8, "total_steps": 16000, "seed": 42, "grad_accum": 16}
+]

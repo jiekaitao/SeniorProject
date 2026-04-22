@@ -1,0 +1,83 @@
+[
+  {
+    "tag": "megaInst_sg_L16_train5_seedX137",
+    "task": "spatialgrid",
+    "inject_layer": 16,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_sg_L16_train5_seedX2024",
+    "task": "spatialgrid",
+    "inject_layer": 16,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 2024,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_sg_L16_train5_seedX1",
+    "task": "spatialgrid",
+    "inject_layer": 16,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 1,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_sg_L16_train5_seedX2",
+    "task": "spatialgrid",
+    "inject_layer": 16,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 2,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_sg_L16_train5_seedX3",
+    "task": "spatialgrid",
+    "inject_layer": 16,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 3,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_L12_train5_seedX42",
+    "task": "mazenav",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_L12_train5_seedX7",
+    "task": "mazenav",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_L12_train5_seedX137",
+    "task": "mazenav",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 137,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_mz_L12_train5_seedX2024",
+    "task": "mazenav",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 3000,
+    "seed": 2024,
+    "grad_accum": 16
+  }
+]

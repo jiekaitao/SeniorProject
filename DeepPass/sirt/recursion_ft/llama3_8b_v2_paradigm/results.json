@@ -1,0 +1,41 @@
+{
+  "model": "/data/ai/models/nlp/llama/models_llama3/Meta-Llama-3-8B-Instruct-hf",
+  "name": "llama3_8b_v2",
+  "core": [
+    10,
+    13
+  ],
+  "rank_attn": 8,
+  "rank_ffn": 1,
+  "steps": 150,
+  "warmup": 40,
+  "baseline": {
+    "math": 0.6723633835669293,
+    "eq": 58.889294866891305,
+    "combined": 63.062816611792115
+  },
+  "pre_k2": {
+    "math": 0.6437250895178367,
+    "eq": 59.47673213842643,
+    "combined": 61.92462054510505
+  },
+  "post_k1": {
+    "math": 0.6723633835669293,
+    "eq": 58.889294866891305,
+    "combined": 63.062816611792115
+  },
+  "post_k2": {
+    "math": 0.6453957028938306,
+    "eq": 59.07250867483115,
+    "combined": 61.80603948210711
+  },
+  "post_k2_whisper": {
+    "math": 0.6579771683110652,
+    "eq": 47.398841133285984,
+    "combined": 56.598278982196256
+  },
+  "k1_preserved": true,
+  "k2_improves": false,
+  "best_config": "K=2",
+  "best_delta": -1.2567771296850054
+}

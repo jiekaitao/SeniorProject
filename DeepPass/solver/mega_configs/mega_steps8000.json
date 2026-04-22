@@ -1,0 +1,38 @@
+[
+  {
+    "tag": "megaInst_steps8000_L12_mazenav_seed42",
+    "task": "mazenav",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 8000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_steps8000_L12_mazenav_seed7",
+    "task": "mazenav",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 8000,
+    "seed": 7,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_steps8000_L12_spatialgrid_seed42",
+    "task": "spatialgrid",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 8000,
+    "seed": 42,
+    "grad_accum": 16
+  },
+  {
+    "tag": "megaInst_steps8000_L12_spatialgrid_seed7",
+    "task": "spatialgrid",
+    "inject_layer": 12,
+    "n_rounds": 5,
+    "total_steps": 8000,
+    "seed": 7,
+    "grad_accum": 16
+  }
+]
