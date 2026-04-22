@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import io
 import json
 import logging
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from config.settings import settings
 
@@ -105,14 +106,96 @@ def _validate_grid_pairs(data: list) -> Tuple[List[Dict[str, Any]], str | None]:
     return valid, None
 
 
+def _parse_xlsx_bytes(raw: bytes) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+    """Extract grid pairs from an xlsx workbook.
+
+    Expected layout (first sheet, first row optional header):
+      A: JSON string of input grid  (e.g. `[[1,0],[0,1]]`)
+      B: JSON string of output grid
+
+    Also accepts a "grid of cells" layout where a single row of cells is
+    itself a 1xN grid — useful for small demos.
+    """
+    try:
+        import openpyxl  # type: ignore
+    except ImportError:
+        return [], "xlsx support not installed (openpyxl missing)"
+
+    try:
+        wb = openpyxl.load_workbook(io.BytesIO(raw), data_only=True, read_only=True)
+    except Exception as e:
+        return [], f"Could not open xlsx: {e}"
+
+    ws = wb.active
+    if ws is None:
+        return [], "Workbook has no active sheet"
+
+    pairs: List[Dict[str, Any]] = []
+    for row_idx, row in enumerate(ws.iter_rows(values_only=True)):
+        if not row:
+            continue
+        a = row[0]
+        b = row[1] if len(row) > 1 else None
+        if a is None or b is None:
+            continue
+        # Skip a header row like ("input", "output").
+        if row_idx == 0 and isinstance(a, str) and isinstance(b, str):
+            if a.strip().lower() in {"input", "inputs"} and b.strip().lower() in {
+                "output",
+                "outputs",
+            }:
+                continue
+
+        def _coerce(cell: Any) -> Optional[List[List[int]]]:
+            if isinstance(cell, str):
+                try:
+                    parsed = json.loads(cell)
+                except json.JSONDecodeError:
+                    return None
+            else:
+                parsed = cell
+            if not isinstance(parsed, list):
+                return None
+            # Flat list of ints -> treat as 1xN grid.
+            if all(isinstance(v, (int, float)) for v in parsed):
+                return [[int(v) for v in parsed]]
+            grid: List[List[int]] = []
+            for r in parsed:
+                if not isinstance(r, list):
+                    return None
+                try:
+                    grid.append([int(v) for v in r])
+                except (TypeError, ValueError):
+                    return None
+            return grid
+
+        inp = _coerce(a)
+        out = _coerce(b)
+        if inp is None or out is None:
+            continue
+        pairs.append({"input": inp, "output": out})
+
+    if not pairs:
+        return [], "No valid input/output pairs found in xlsx"
+    return pairs, None
+
+
 async def parse_file_to_grid_pairs(
-    file_content: str, filename: str
+    file_content: str, filename: str, raw_bytes: Optional[bytes] = None
 ) -> Tuple[List[Dict[str, Any]], str | None]:
     """Parse file content into grid pairs, using JSON fast-path or LLM.
 
     Handles ChatGPT output (markdown code fences, RTF, prose wrapping).
     Returns (grid_pairs, error_message). On success error is None.
     """
+    lower_name = (filename or "").lower()
+    if raw_bytes is not None and (
+        lower_name.endswith(".xlsx")
+        or lower_name.endswith(".xlsm")
+        or lower_name.endswith(".xltx")
+    ):
+        return _parse_xlsx_bytes(raw_bytes)
+
     # Strip ChatGPT wrapping (code fences, RTF, prose) before any parsing
     cleaned = _strip_chatgpt_wrapping(file_content)
 

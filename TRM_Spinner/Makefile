@@ -7,6 +7,7 @@ prebuild:
 	mkdir -p worker/trm/models/recursive_reasoning worker/trm/evaluators worker/trm/dataset worker/trm/config/arch worker/trm/utils
 	# Core training (modified for web)
 	cp worker/pretrain_web.py worker/trm/pretrain_web.py
+	cp worker/predict_web.py worker/trm/predict_web.py
 	# Puzzle dataset
 	cp ../RR_TRM/puzzle_dataset.py worker/trm/puzzle_dataset.py
 	# Models (unmodified)

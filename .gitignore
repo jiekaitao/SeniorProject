@@ -98,3 +98,6 @@ DeepPass/mor_baseline/
 # DeepPass — one-off zips / briefings that shouldn't be tracked
 DeepPass/llms-have-adhd.zip
 DeepPass/deeppass_blog_briefing.md
+
+# Claude Code workspace
+.claude/

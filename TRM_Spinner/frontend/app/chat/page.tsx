@@ -121,23 +121,39 @@ function ChatListContent() {
             )}
 
             {sessions.map((session) => (
-              <button
+              <div
                 key={session.id}
-                onClick={() => router.push(`/chat/${session.id}`)}
-                className="flex w-full items-center gap-4 rounded-xl bg-cream/60 px-5 py-4 text-left shadow-sm transition-colors hover:bg-cream"
+                className="flex w-full items-center gap-4 rounded-xl bg-cream/60 px-5 py-4 shadow-sm transition-colors hover:bg-cream"
               >
-                <MessageSquare
-                  size={20}
-                  className="shrink-0 text-gator-500/50"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-body text-base text-gator-600">
-                    {session.title || "Untitled session"}
-                  </p>
-                  <p className="font-body text-xs text-gator-500/50">
-                    {new Date(session.created_at).toLocaleDateString()}
-                  </p>
-                </div>
+                <button
+                  onClick={() => router.push(`/chat/${session.id}`)}
+                  className="flex min-w-0 flex-1 items-center gap-4 text-left"
+                >
+                  <MessageSquare
+                    size={20}
+                    className="shrink-0 text-gator-500/50"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-body text-base text-gator-600">
+                      {session.title || "Untitled session"}
+                    </p>
+                    <p className="font-body text-xs text-gator-500/50">
+                      {new Date(session.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </button>
+                {(session.status === "completed" ||
+                  session.status === "training") && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/results/${session.id}`);
+                    }}
+                    className="rounded-lg border border-gator-200 bg-cream px-3 py-1 font-body text-xs text-gator-500 hover:bg-gator-100"
+                  >
+                    results
+                  </button>
+                )}
                 <span
                   className={`rounded-full px-2.5 py-0.5 font-body text-xs ${
                     session.status === "completed"
@@ -149,7 +165,7 @@ function ChatListContent() {
                 >
                   {session.status}
                 </span>
-              </button>
+              </div>
             ))}
           </div>
         </div>

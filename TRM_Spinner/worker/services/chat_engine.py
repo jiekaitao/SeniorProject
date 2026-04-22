@@ -8,11 +8,40 @@ from typing import Any, AsyncIterator, Dict
 
 from config.settings import settings
 from schemas.chat import ChatResponse, ChatState
+from schemas.jobs import JobCreate
 from services.classifier import classify_problem
 from services.data_generator import generate_training_data
 from services.data_converter import convert_data
+from services.training_manager import TrainingManager
 
 logger = logging.getLogger(__name__)
+
+
+def _default_training_config(data_path: str) -> Dict[str, Any]:
+    """Return a compact TRM config suitable for quick end-to-end demos.
+
+    Small puzzle batches (e.g. Hanoi) train to convergence in a couple of
+    minutes on an RTX 5090 with these settings.
+    """
+    return {
+        "arch": "trm",
+        "data_paths": [data_path],
+        "global_batch_size": 16,
+        "epochs": 5000,
+        "eval_interval": 5000,
+        "lr": 3e-4,
+        "lr_min_ratio": 0.1,
+        "lr_warmup_steps": 50,
+        "weight_decay": 0.01,
+        "beta1": 0.9,
+        "beta2": 0.95,
+        "puzzle_emb_lr": 1e-2,
+        "puzzle_emb_weight_decay": 0.1,
+        "evaluators": [],
+        # Keep checkpoints under /app/checkpoints so the docker volume mount
+        # (./checkpoints on host) picks them up.
+        "checkpoint_path": os.path.join("/app/checkpoints", os.path.basename(data_path)),
+    }
 
 # Action tags the LLM can emit to trigger system behaviour
 _ACTION_RE = re.compile(r"\[ACTION:([\w_]+)\]")
@@ -195,7 +224,12 @@ class ChatEngine:
 
         # Handle START_TRAINING action
         if "START_TRAINING" in actions and data_path:
-            return ChatResponse(message=clean_reply or "Starting training now.", state=ChatState.TRAINING)
+            job_id = await self._queue_training_job(session, data_path)
+            return ChatResponse(
+                message=clean_reply or "Starting training now.",
+                state=ChatState.TRAINING,
+                job_id=job_id,
+            )
 
         return ChatResponse(message=clean_reply or reply, state=ChatState.DATA_COLLECTION)
 
@@ -273,7 +307,12 @@ class ChatEngine:
         clean_reply, actions = _strip_actions(reply)
 
         if "START_TRAINING" in actions:
-            return ChatResponse(message=clean_reply or fallback, state=ChatState.TRAINING)
+            job_id = await self._queue_training_job(session, output_dir)
+            return ChatResponse(
+                message=clean_reply or fallback,
+                state=ChatState.TRAINING,
+                job_id=job_id,
+            )
 
         return ChatResponse(message=clean_reply or fallback, state=ChatState.DATA_COLLECTION)
 
@@ -282,7 +321,7 @@ class ChatEngine:
         job_id = session.get("job_id")
 
         if job_id:
-            status = await self.redis.hget(f"trm:job:{job_id}", "status")
+            status = await self.redis.hget(f"trm:jobs:{job_id}", "status")
             if status:
                 status_str = status.decode() if isinstance(status, bytes) else status
 
@@ -292,7 +331,7 @@ class ChatEngine:
                         state=ChatState.COMPLETED,
                     )
                 elif status_str == "failed":
-                    error = await self.redis.hget(f"trm:job:{job_id}", "error")
+                    error = await self.redis.hget(f"trm:jobs:{job_id}", "error")
                     error_str = error.decode() if isinstance(error, bytes) else (error or "Unknown error")
                     return ChatResponse(
                         message=f"Training failed: {error_str}",
@@ -524,7 +563,12 @@ class ChatEngine:
 
         # Handle START_TRAINING action
         if "START_TRAINING" in actions and data_path:
-            yield {"type": "done", "state": ChatState.TRAINING.value}
+            job_id = await self._queue_training_job(session, data_path)
+            yield {
+                "type": "done",
+                "state": ChatState.TRAINING.value,
+                "job_id": job_id,
+            }
             return
 
         yield {"type": "done", "state": ChatState.DATA_COLLECTION.value}
@@ -599,9 +643,33 @@ class ChatEngine:
             yield {"type": "text_delta", "content": clean_followup}
 
         if "START_TRAINING" in followup_actions:
-            yield {"type": "done", "state": ChatState.TRAINING.value}
+            job_id = await self._queue_training_job(session, output_dir)
+            yield {
+                "type": "done",
+                "state": ChatState.TRAINING.value,
+                "job_id": job_id,
+            }
         else:
             yield {"type": "done", "state": ChatState.DATA_COLLECTION.value}
+
+    async def _queue_training_job(self, session: Dict[str, Any], data_path: str) -> str:
+        """Create a TrainingManager job and persist the job_id for this session."""
+        session_id = session.get("id", "unknown")
+        user_id = session.get("user_id", "unknown")
+
+        manager = TrainingManager(redis=self.redis, db=self.db)
+        config = _default_training_config(data_path)
+        job = JobCreate(
+            session_id=session_id,
+            user_id=user_id,
+            data_path=data_path,
+            config=config,
+        )
+        job_id = await manager.queue_job(job)
+
+        # Persist so subsequent queries return the job_id.
+        await self.redis.hset(f"session:{session_id}:state", "job_id", job_id)
+        return job_id
 
     async def _handle_training_stream(
         self, session: Dict[str, Any], message: str,
@@ -610,7 +678,7 @@ class ChatEngine:
         job_id = session.get("job_id")
 
         if job_id:
-            status = await self.redis.hget(f"trm:job:{job_id}", "status")
+            status = await self.redis.hget(f"trm:jobs:{job_id}", "status")
             if status:
                 status_str = status.decode() if isinstance(status, bytes) else status
 
@@ -619,7 +687,7 @@ class ChatEngine:
                     yield {"type": "done", "state": ChatState.COMPLETED.value}
                     return
                 elif status_str == "failed":
-                    error = await self.redis.hget(f"trm:job:{job_id}", "error")
+                    error = await self.redis.hget(f"trm:jobs:{job_id}", "error")
                     error_str = error.decode() if isinstance(error, bytes) else (error or "Unknown error")
                     yield {"type": "text_delta", "content": f"Training failed: {error_str}"}
                     yield {"type": "done", "state": ChatState.COMPLETED.value}

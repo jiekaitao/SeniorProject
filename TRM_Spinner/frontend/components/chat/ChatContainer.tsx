@@ -353,13 +353,19 @@ export default function ChatContainer({ sessionId }: ChatContainerProps) {
         <MessageList messages={messages}>
           {/* Training progress rendered inline at the bottom of the message list */}
           {phase === "training" && jobId && (
-            <div className="my-3 flex justify-start">
+            <div className="my-3 flex flex-col items-start gap-2">
               <div className="max-w-[90%] overflow-hidden rounded-2xl bg-cream shadow-sm">
                 <TrainingProgress
                   jobId={jobId}
                   onComplete={handleTrainingComplete}
                 />
               </div>
+              <button
+                onClick={() => router.push(`/results/${sessionId}`)}
+                className="rounded-lg border border-gator-200 bg-cream/80 px-4 py-1.5 font-body text-sm text-gator-500 hover:bg-gator-100"
+              >
+                Open results dashboard →
+              </button>
             </div>
           )}
 
@@ -368,15 +374,24 @@ export default function ChatContainer({ sessionId }: ChatContainerProps) {
             <div className="my-3 flex justify-start">
               <div className="rounded-2xl bg-cream px-5 py-4 shadow-sm">
                 <p className="mb-3 font-body text-sm text-gator-600">
-                  Your model is ready to download.
+                  Your model is ready. Check the results dashboard for
+                  metrics, accuracy, and live predictions.
                 </p>
-                <button
-                  onClick={handleDownloadWeights}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gator-500 px-5 py-2 font-body text-cream transition-colors hover:bg-gator-600"
-                >
-                  <Download size={16} />
-                  Download Model Weights
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => router.push(`/results/${sessionId}`)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-gator-500 px-5 py-2 font-body text-cream transition-colors hover:bg-gator-600"
+                  >
+                    View results
+                  </button>
+                  <button
+                    onClick={handleDownloadWeights}
+                    className="inline-flex items-center gap-2 rounded-xl border border-gator-300 bg-cream px-5 py-2 font-body text-gator-600 transition-colors hover:bg-gator-100"
+                  >
+                    <Download size={16} />
+                    Download weights
+                  </button>
+                </div>
               </div>
             </div>
           )}

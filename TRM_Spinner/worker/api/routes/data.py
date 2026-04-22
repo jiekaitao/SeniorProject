@@ -159,13 +159,16 @@ async def upload_file(
     if session.get("user_id") != user_id:
         raise HTTPException(status_code=403, detail="Not your session")
 
-    # Read file content
+    # Read file content (keep raw bytes so we can parse binary formats).
     raw = await file.read()
-    text = raw.decode("utf-8", errors="replace")
+    try:
+        text = raw.decode("utf-8", errors="replace")
+    except Exception:
+        text = ""
     filename = file.filename or "upload.txt"
 
-    # Parse via file_parser (JSON fast-path or LLM)
-    grid_pairs, error = await parse_file_to_grid_pairs(text, filename)
+    # Parse via file_parser (JSON fast-path, xlsx, or LLM)
+    grid_pairs, error = await parse_file_to_grid_pairs(text, filename, raw_bytes=raw)
 
     if error or len(grid_pairs) == 0:
         return DataValidation(

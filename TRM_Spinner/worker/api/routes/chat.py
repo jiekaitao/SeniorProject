@@ -87,6 +87,8 @@ async def chat(
     redis_update = {}
     if response.classification:
         redis_update["classification"] = response.classification
+    if response.job_id:
+        redis_update["job_id"] = response.job_id
     if redis_update:
         await redis.hset(_redis_state_key(body.session_id), mapping=redis_update)
 
@@ -189,6 +191,8 @@ async def chat_stream(
         redis_update = {}
         if classification:
             redis_update["classification"] = classification
+        if job_id:
+            redis_update["job_id"] = job_id
         if redis_update:
             await redis.hset(_redis_state_key(body.session_id), mapping=redis_update)
 

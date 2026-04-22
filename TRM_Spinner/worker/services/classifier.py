@@ -64,6 +64,10 @@ CATEGORY_KEYWORDS: Dict[str, List[Tuple[str, float]]] = {
         ("pattern", 0.15),
         ("reasoning", 0.15),
         ("abstraction", 0.25),
+        ("hanoi", 0.5),
+        ("tower", 0.2),
+        ("disk", 0.1),
+        ("peg", 0.2),
     ],
     "pattern_recognition": [
         ("classify", 0.25),

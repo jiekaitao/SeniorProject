@@ -4,13 +4,44 @@ import { useState, useEffect, useCallback } from "react";
 import { account, ID } from "@/lib/appwrite";
 import type { Models } from "appwrite";
 
+const DEV_API_KEY = process.env.NEXT_PUBLIC_DEV_API_KEY || "";
+// Matches the user_id the worker's X-API-Key bypass stamps onto requests.
+const DEV_USER_ID = "test-user-001";
+
+function makeDevUser(): Models.User<Models.Preferences> {
+  const now = new Date().toISOString();
+  return {
+    $id: DEV_USER_ID,
+    $createdAt: now,
+    $updatedAt: now,
+    name: "Dev User",
+    email: "dev@local",
+    emailVerification: true,
+    phone: "",
+    phoneVerification: false,
+    mfa: false,
+    prefs: {} as Models.Preferences,
+    registration: now,
+    status: true,
+    labels: [],
+    passwordUpdate: now,
+    accessedAt: now,
+    targets: [],
+  } as unknown as Models.User<Models.Preferences>;
+}
+
 export function useAuth() {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
-    null
+    DEV_API_KEY ? makeDevUser() : null
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!DEV_API_KEY);
 
   const getUser = useCallback(async () => {
+    if (DEV_API_KEY) {
+      setUser(makeDevUser());
+      setLoading(false);
+      return;
+    }
     try {
       // Timeout so we don't hang if Appwrite is unreachable
       const timeout = new Promise<never>((_, reject) =>

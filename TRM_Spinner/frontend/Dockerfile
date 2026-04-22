@@ -14,6 +14,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+# Public folder is optional (app has no static assets currently).
+RUN mkdir -p ./public
 EXPOSE 3000
 CMD ["sh", "-c", "printf '\\n  \\033[1;36m➜  Frontend:\\033[0m http://localhost:%s\\n\\n' \"${EXTERNAL_PORT:-3100}\" && node server.js"]

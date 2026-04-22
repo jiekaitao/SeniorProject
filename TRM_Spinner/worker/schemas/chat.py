@@ -35,3 +35,4 @@ class ChatResponse(BaseModel):
     message: str
     state: ChatState
     classification: Optional[str] = None
+    job_id: Optional[str] = None

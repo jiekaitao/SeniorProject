@@ -36,6 +36,81 @@ def _generate_fallback_examples(num_examples: int) -> List[Dict[str, Any]]:
     return examples
 
 
+# ---------------------------------------------------------------------------
+#  Towers of Hanoi generator (deterministic, no LLM required)
+# ---------------------------------------------------------------------------
+
+def _pegs_to_grid(pegs: List[List[int]], height: int) -> List[List[int]]:
+    grid: List[List[int]] = []
+    for row in range(height):
+        r = []
+        for peg in pegs:
+            r.append(peg[row] if row < len(peg) else 0)
+        grid.append(r)
+    return list(reversed(grid))
+
+
+def _solve_hanoi(n: int, source: int = 0, target: int = 2, auxiliary: int = 1) -> List[List[List[int]]]:
+    pegs: List[List[int]] = [list(range(n, 0, -1)), [], []]
+    states = [_pegs_to_grid(pegs, n)]
+
+    def move(k: int, src: int, tgt: int, aux: int) -> None:
+        if k == 0:
+            return
+        move(k - 1, src, aux, tgt)
+        disk = pegs[src].pop()
+        pegs[tgt].append(disk)
+        states.append(_pegs_to_grid(pegs, n))
+        move(k - 1, aux, tgt, src)
+
+    move(n, source, target, auxiliary)
+    return states
+
+
+def _pad_grid(grid: List[List[int]], rows: int, cols: int) -> List[List[int]]:
+    out: List[List[int]] = []
+    for r in range(rows):
+        if r < len(grid):
+            row = list(grid[r]) + [0] * (cols - len(grid[r]))
+        else:
+            row = [0] * cols
+        out.append(row[:cols])
+    return out
+
+
+def _generate_hanoi_examples(
+    num_examples: int, max_disks: int = 5
+) -> List[Dict[str, Any]]:
+    """Generate Towers of Hanoi move pairs: input state -> next state.
+
+    Uses the classic recursive optimal solution and enumerates consecutive
+    states. Grid is padded to max_disks rows by 3 columns (one per peg).
+    """
+    pairs: List[Dict[str, Any]] = []
+    # Deterministic across disk sizes 2..max_disks.
+    for n_disks in range(2, max_disks + 1):
+        states = _solve_hanoi(n_disks)
+        for i in range(len(states) - 1):
+            inp = _pad_grid(states[i], max_disks, 3)
+            out = _pad_grid(states[i + 1], max_disks, 3)
+            pairs.append({"input": inp, "output": out})
+
+    # Trim (or repeat) to hit the requested count.
+    if num_examples <= 0 or not pairs:
+        return pairs
+    if len(pairs) >= num_examples:
+        return pairs[:num_examples]
+    extra = []
+    i = 0
+    while len(pairs) + len(extra) < num_examples:
+        extra.append(pairs[i % len(pairs)])
+        i += 1
+    return pairs + extra
+
+
+_HANOI_PATTERNS = ("hanoi", "tower of ", "towers of ", "peg")
+
+
 async def generate_training_data(
     problem_description: str,
     classification: str | None = None,
@@ -45,6 +120,15 @@ async def generate_training_data(
 
     Returns (grid_pairs, error_message). On success error is None.
     """
+    desc_lower = (problem_description or "").lower()
+    is_hanoi = any(p in desc_lower for p in _HANOI_PATTERNS)
+
+    if is_hanoi:
+        # Hanoi has a closed-form optimal sequence — always prefer the
+        # deterministic generator over the LLM so the model gets clean data.
+        # 5 disks yields 31 pairs which is plenty for a ~3 min demo.
+        return _generate_hanoi_examples(num_examples=max(num_examples, 31)), None
+
     if not settings.openai_api_key:
         logger.info("No API key — using fallback data generation")
         return _generate_fallback_examples(num_examples), None

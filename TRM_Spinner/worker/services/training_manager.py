@@ -93,9 +93,18 @@ class TrainingManager:
         return decoded
 
     async def complete_job(self, job_id: str) -> None:
-        """Mark a job as completed."""
+        """Mark a job as completed, and bubble the status up to the session."""
         await self.redis.hset(f"{self.JOB_PREFIX}{job_id}", "status", JobStatus.COMPLETED)
         await self.db.update_job(job_id, {"status": JobStatus.COMPLETED})
+        # Mirror completion to the session so the chat/results pages don't
+        # have to keep polling /jobs/{id}/latest to infer the final state.
+        try:
+            raw = await self.redis.hget(f"{self.JOB_PREFIX}{job_id}", "session_id")
+            session_id = raw.decode() if isinstance(raw, bytes) else raw
+            if session_id:
+                await self.db.update_session(session_id, {"status": "completed"})
+        except Exception:
+            pass
 
     async def fail_job(self, job_id: str, error: str) -> None:
         """Mark a job as failed with an error message."""

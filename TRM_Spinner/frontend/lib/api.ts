@@ -1,9 +1,17 @@
 import { account } from "@/lib/appwrite";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const DEV_API_KEY = process.env.NEXT_PUBLIC_DEV_API_KEY || "";
 
-/** Get JWT with a timeout so we never hang indefinitely. */
+/** Get JWT with a timeout so we never hang indefinitely.
+ *
+ * In dev mode (NEXT_PUBLIC_DEV_API_KEY set) we skip Appwrite entirely and
+ * send the admin API key, matching the worker's `X-API-Key` bypass.
+ */
 async function getAuthHeader(): Promise<Record<string, string>> {
+  if (DEV_API_KEY) {
+    return { "X-API-Key": DEV_API_KEY };
+  }
   try {
     const jwtPromise = account.createJWT();
     const timeout = new Promise<never>((_, reject) =>

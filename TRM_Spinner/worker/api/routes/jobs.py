@@ -138,6 +138,73 @@ async def download_weights(
     )
 
 
+@router.get("/api/jobs/{job_id}/predictions")
+async def get_predictions(
+    job_id: str,
+    request: Request,
+    user_id: str = Depends(verify_token),
+) -> Dict[str, Any]:
+    """Return the stored `predictions.json` for a completed job."""
+    manager = TrainingManager(redis=request.app.state.redis, db=request.app.state.db)
+    status = await manager.get_job_status(job_id)
+
+    if status.get("status") == "not_found":
+        raise HTTPException(status_code=404, detail="Job not found")
+    if status.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Not your job")
+
+    redis = request.app.state.redis
+    pred_path = await redis.hget(f"trm:jobs:{job_id}", "predictions_path")
+    if pred_path:
+        pred_path = pred_path.decode() if isinstance(pred_path, bytes) else pred_path
+
+    # Fall back: look at data_path/predictions.json
+    if not pred_path:
+        data_path = status.get("data_path")
+        if data_path:
+            candidate = os.path.join(data_path, "predictions.json")
+            if os.path.exists(candidate):
+                pred_path = candidate
+
+    if not pred_path or not os.path.exists(pred_path):
+        raise HTTPException(status_code=404, detail="Predictions not ready yet")
+
+    with open(pred_path, "r") as f:
+        return json.load(f)
+
+
+@router.get("/api/jobs/{job_id}/latest")
+async def get_latest_metrics(
+    job_id: str,
+    request: Request,
+    user_id: str = Depends(verify_token),
+) -> Dict[str, Any]:
+    """Return the most recent training metrics (from Redis cache)."""
+    manager = TrainingManager(redis=request.app.state.redis, db=request.app.state.db)
+    status = await manager.get_job_status(job_id)
+
+    if status.get("status") == "not_found":
+        raise HTTPException(status_code=404, detail="Job not found")
+    if status.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Not your job")
+
+    redis = request.app.state.redis
+    raw = await redis.hgetall(f"trm:jobs:{job_id}:latest")
+    result: Dict[str, Any] = {}
+    for k, v in raw.items():
+        key = k.decode() if isinstance(k, bytes) else k
+        val = v.decode() if isinstance(v, bytes) else v
+        # Try to coerce numerics.
+        try:
+            if "." in val:
+                result[key] = float(val)
+            else:
+                result[key] = int(val)
+        except (ValueError, TypeError):
+            result[key] = val
+    return {"job_id": job_id, "status": status.get("status"), "metrics": result}
+
+
 @router.get("/api/jobs/{job_id}/stream")
 async def stream_job(
     job_id: str,

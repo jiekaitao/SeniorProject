@@ -18,11 +18,16 @@ import coolname
 import hydra
 import pydantic
 from omegaconf import DictConfig
-try:
-    from adam_atan2 import AdamATan2
-except ImportError:
-    # Fallback to PyTorch AdamW if adam_atan2 not available
+if os.environ.get("DISABLE_ADAM_ATAN2") == "1":
+    # Blackwell (sm_120) lacks a pre-built adam_atan2 kernel, so allow
+    # forcing the PyTorch AdamW fallback at runtime.
     AdamATan2 = torch.optim.AdamW
+else:
+    try:
+        from adam_atan2 import AdamATan2
+    except ImportError:
+        # Fallback to PyTorch AdamW if adam_atan2 not available
+        AdamATan2 = torch.optim.AdamW
 try:
     from torch.optim import Muon as TorchMuon  # PyTorch 2.9+ native Muon
 except ImportError:
@@ -31,7 +36,10 @@ except ImportError:
 if TorchMuon is not None:
     Muon = TorchMuon
 else:
-    from muon import SingleDeviceMuon as Muon  # standalone package (single-GPU only)
+    try:
+        from muon import SingleDeviceMuon as Muon  # standalone package (single-GPU only)
+    except ImportError:
+        Muon = torch.optim.AdamW  # final fallback
 
 from puzzle_dataset import PuzzleDataset, PuzzleDatasetConfig, PuzzleDatasetMetadata
 from utils.functions import load_model_class, get_model_source_path
